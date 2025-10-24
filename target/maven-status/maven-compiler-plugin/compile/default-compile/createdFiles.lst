@@ -1,0 +1,13 @@
+model\Librarian.class
+servlet\DocumentServlet.class
+model\LibraryCard.class
+dao\DAO.class
+model\Document.class
+model\Reader.class
+model\Member.class
+model\ReaderStatistics.class
+util\DBContext.class
+model\Manager.class
+model\BorrowSlip.class
+model\BorrowSlipDetail.class
+dao\DocumentDAO.class
