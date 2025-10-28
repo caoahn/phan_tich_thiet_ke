@@ -6,6 +6,8 @@
 package servlet;
 import model.Document;
 import dao.DocumentDAO;
+import model.DocumentCopy;
+
 import java.io.IOException;
 import java.util.List;
 import javax.servlet.ServletException;
@@ -113,23 +115,23 @@ public class DocumentServlet extends HttpServlet {
         
         try {
             int documentId = Integer.parseInt(idParam);
-            
-            // Gọi DAO để lấy chi tiết
+
+            // Lấy thông tin tài liệu
             Document document = documentDAO.getDetailDocument(documentId);
-            
-            if (document != null) {
-                // Đưa dữ liệu vào request
-                request.setAttribute("document", document);
-                
-                // Forward đến trang chi tiết
-                request.getRequestDispatcher("gdDetailDocument.jsp").forward(request, response);
-            } else {
-                // Không tìm thấy tài liệu
-                response.sendRedirect("document?action=list&error=notfound");
-            }
-            
+
+            // Lấy danh sách bản sao
+            List<DocumentCopy> copies = documentDAO.getDocumentCopies(documentId);
+
+            request.setAttribute("document", document);
+            request.setAttribute("copies", copies);
+
+            request.getRequestDispatcher("gdDetailDocument.jsp").forward(request, response);
+
         } catch (NumberFormatException e) {
             response.sendRedirect("document?action=list&error=invalid");
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendRedirect("document?action=list&error=system");
         }
     }
     

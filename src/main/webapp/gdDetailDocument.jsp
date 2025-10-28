@@ -11,157 +11,450 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
             padding: 20px;
         }
-        
+
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
             background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 40px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .header .subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .content {
             padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-        
-        h1 {
-            color: #333;
-            margin-bottom: 10px;
-            border-bottom: 3px solid #4CAF50;
-            padding-bottom: 10px;
-        }
-        
+
         .document-detail {
-            margin-top: 30px;
+            margin-bottom: 30px;
         }
-        
+
         .detail-row {
             display: flex;
             margin-bottom: 20px;
             padding: 15px;
-            background-color: #f9f9f9;
-            border-radius: 5px;
-            border-left: 4px solid #4CAF50;
-            align-items: flex-start; /* Canh lề cho nội dung */
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            align-items: flex-start;
+            transition: all 0.3s;
         }
-        
+
+        .detail-row:hover {
+            background-color: #e9ecef;
+            transform: translateX(5px);
+        }
+
         .detail-label {
             font-weight: bold;
             color: #555;
             min-width: 150px;
             flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        
+
         .detail-value {
             color: #333;
             flex: 1;
             line-height: 1.6;
         }
-        
+
+        .detail-value strong {
+            font-size: 18px;
+            color: #667eea;
+        }
+
         .description-box {
             background-color: #fff;
             padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
             margin-top: 10px;
             line-height: 1.8;
-            /* Thêm để giữ định dạng xuống dòng từ database */
-            white-space: pre-wrap; 
+            white-space: pre-wrap;
+            color: #555;
         }
-        
+
+        .tag {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* Thống kê bản sao */
+        .stats-section {
+            margin: 30px 0;
+            padding: 25px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 12px;
+        }
+
+        .stats-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .stat-card.total {
+            border-top: 4px solid #6c757d;
+        }
+
+        .stat-card.available {
+            border-top: 4px solid #28a745;
+        }
+
+        .stat-card.borrowed {
+            border-top: 4px solid #ffc107;
+        }
+
+        .stat-card.damaged {
+            border-top: 4px solid #dc3545;
+        }
+
+        .stat-card.lost {
+            border-top: 4px solid #6c757d;
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-card.total .stat-number {
+            color: #6c757d;
+        }
+
+        .stat-card.available .stat-number {
+            color: #28a745;
+        }
+
+        .stat-card.borrowed .stat-number {
+            color: #ffc107;
+        }
+
+        .stat-card.damaged .stat-number {
+            color: #dc3545;
+        }
+
+        .stat-card.lost .stat-number {
+            color: #6c757d;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        /* Bảng danh sách bản sao */
+        .copies-section {
+            margin: 30px 0;
+        }
+
+        .copies-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .copies-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .copies-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .copies-table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .copies-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .copies-table tbody tr {
+            transition: background 0.2s;
+        }
+
+        .copies-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .copies-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-available {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-borrowed {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-damaged {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-lost {
+            background: #d6d8db;
+            color: #383d41;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
         .button-group {
             margin-top: 30px;
             display: flex;
             gap: 15px;
             flex-wrap: wrap;
+            padding-top: 20px;
+            border-top: 2px solid #e9ecef;
         }
-        
+
         .btn {
-            padding: 12px 25px;
+            padding: 12px 28px;
             text-decoration: none;
-            border-radius: 5px;
-            font-size: 16px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
             transition: all 0.3s;
             border: none;
             cursor: pointer;
-            display: inline-block;
-            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
-        
+
         .btn-back {
-            background-color: #f44336;
+            background-color: #6c757d;
             color: white;
         }
-        
+
         .btn-back:hover {
-            background-color: #da190b;
+            background-color: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
         }
-        
+
         .btn-borrow {
-            background-color: #4CAF50;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
             color: white;
         }
-        
+
         .btn-borrow:hover {
-            background-color: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
         }
-        
-        .btn-search {
-            background-color: #2196F3;
-            color: white;
+
+        .btn-borrow:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
         }
-        
-        .btn-search:hover {
-            background-color: #0b7dda;
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        
-        .tag {
-            display: inline-block;
-            background-color: #4CAF50;
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 14px;
-            margin-right: 10px;
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #17a2b8;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .detail-row {
+                flex-direction: column;
+            }
+
+            .detail-label {
+                min-width: auto;
+                margin-bottom: 8px;
+            }
+
+            .copies-table {
+                font-size: 14px;
+            }
+
+            .copies-table th,
+            .copies-table td {
+                padding: 10px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>📚 Chi tiết Tài liệu</h1>
-        
-        <c:if test="${not empty document}">
+<div class="container">
+    <c:if test="${not empty document}">
+        <!-- Header -->
+        <div class="header">
+            <h1>📚 Chi tiết Tài liệu</h1>
+            <div class="subtitle">Xem thông tin đầy đủ về tài liệu</div>
+        </div>
+
+        <div class="content">
+            <!-- Thông tin cơ bản -->
             <div class="document-detail">
                 <div class="detail-row">
-                    <div class="detail-label">Mã tài liệu:</div>
+                    <div class="detail-label">
+                        🔖 Mã tài liệu:
+                    </div>
                     <div class="detail-value">
                         <span class="tag">#${document.id}</span>
                     </div>
                 </div>
-                
+
                 <div class="detail-row">
-                    <div class="detail-label">Tên tài liệu:</div>
+                    <div class="detail-label">
+                        📖 Tên tài liệu:
+                    </div>
                     <div class="detail-value">
-                        <strong style="font-size: 18px; color: #2196F3;">
-                            ${document.name}
-                        </strong>
+                        <strong>${document.name}</strong>
                     </div>
                 </div>
-                
+
                 <div class="detail-row">
-                    <div class="detail-label">Tác giả:</div>
+                    <div class="detail-label">
+                        ✍️ Tác giả:
+                    </div>
                     <div class="detail-value">${document.author}</div>
                 </div>
-                
+
                 <div class="detail-row">
-                    <div class="detail-label">Năm xuất bản:</div>
+                    <div class="detail-label">
+                        📅 Năm xuất bản:
+                    </div>
                     <div class="detail-value">${document.publishedYear}</div>
                 </div>
-                
-                <div class="detail-row" style="display: block;"> <div class="detail-label">Mô tả chi tiết:</div>
+
+                <div class="detail-row" style="display: block;">
+                    <div class="detail-label">
+                        📝 Mô tả chi tiết:
+                    </div>
                     <div class="description-box">
                         <c:choose>
                             <c:when test="${not empty document.description}">
@@ -174,29 +467,73 @@
                     </div>
                 </div>
             </div>
-            
+
+            <!-- Danh sách bản sao chi tiết -->
+            <c:if test="${not empty copies}">
+                <div class="copies-section">
+                    <h2>📑 Danh sách các bản sao</h2>
+                    <table class="copies-table">
+                        <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Mã bản sao</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <c:forEach var="copy" items="${copies}" varStatus="status">
+                            <tr>
+                                <td>${status.index + 1}</td>
+                                <td><strong>${copy.documentCode}</strong></td>
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${copy.status == 'available'}">
+                                            <span class="status-badge status-available">✓ Có sẵn</span>
+                                        </c:when>
+                                        <c:when test="${copy.status == 'borrowed'}">
+                                            <span class="status-badge status-borrowed">📤 Đang mượn</span>
+                                        </c:when>
+                                        <c:when test="${copy.status == 'damaged'}">
+                                            <span class="status-badge status-damaged">⚠ Hư hỏng</span>
+                                        </c:when>
+                                        <c:when test="${copy.status == 'lost'}">
+                                            <span class="status-badge status-lost">❌ Mất</span>
+                                        </c:when>
+                                    </c:choose>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                        </tbody>
+                    </table>
+                </div>
+            </c:if>
+
+            <!-- Nút hành động -->
             <div class="button-group">
                 <a href="document?action=search" class="btn btn-back">
                     Quay lại tìm kiếm
                 </a>
-<!--                <a href="document?action=list" class="btn btn-search">
-                    Danh sách tài liệu
-                </a>
-                <button class="btn btn-borrow" onclick="alert('Chức năng mượn tài liệu sẽ được phát triển!')">
-                    Mượn tài liệu này
-                </button>-->
             </div>
-        </c:if>
-        
-        <c:if test="${empty document}">
-            <div style="text-align: center; padding: 40px; color: #666;">
-                <h2>Không tìm thấy tài liệu</h2>
-                <p style="margin-top: 10px;">Tài liệu không tồn tại hoặc đã bị xóa.</p>
-                <a href="document?action=search" class="btn btn-back" style="margin-top: 20px;">
-                   Quay lại tìm kiếm
+        </div>
+    </c:if>
+
+    <c:if test="${empty document}">
+        <div class="header">
+            <h1>❌ Không tìm thấy tài liệu</h1>
+        </div>
+        <div class="content">
+            <div class="empty-state">
+                <h2>Tài liệu không tồn tại</h2>
+                <p style="margin-top: 10px; margin-bottom: 20px;">
+                    Tài liệu không tồn tại hoặc đã bị xóa khỏi hệ thống.
+                </p>
+                <a href="document?action=search" class="btn btn-back">
+                    Quay lại tìm kiếm
                 </a>
             </div>
-        </c:if>
-        
-    </div> </body>
+        </div>
+    </c:if>
+</div>
+
+</body>
 </html>
