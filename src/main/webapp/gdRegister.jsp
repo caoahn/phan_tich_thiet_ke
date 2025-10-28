@@ -14,56 +14,56 @@
 
         body {
             font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #e9ecef;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 30px;
         }
 
         .register-container {
             background: white;
-            padding: 40px;
+            padding: 50px;
             border-radius: 15px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.2);
             width: 100%;
-            max-width: 500px;
+            max-width: 600px;
             max-height: 90vh;
             overflow-y: auto;
         }
 
         .logo {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
         }
 
         .logo .icon {
-            font-size: 64px;
-            margin-bottom: 10px;
+            font-size: 72px;
+            margin-bottom: 15px;
         }
 
         .logo h1 {
             color: #333;
-            font-size: 28px;
-            margin-bottom: 5px;
+            font-size: 32px;
+            margin-bottom: 8px;
         }
 
         .logo p {
             color: #666;
-            font-size: 14px;
+            font-size: 15px;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         .form-group label {
             display: block;
             color: #555;
             font-weight: bold;
-            margin-bottom: 8px;
-            font-size: 14px;
+            margin-bottom: 10px;
+            font-size: 15px;
         }
 
         .form-group label .required {
@@ -73,7 +73,7 @@
         .form-group input,
         .form-group select {
             width: 100%;
-            padding: 12px 15px;
+            padding: 15px 18px;
             border: 2px solid #ddd;
             border-radius: 8px;
             font-size: 16px;
@@ -100,9 +100,9 @@
         .error-message {
             background-color: #ffebee;
             color: #c62828;
-            padding: 12px 15px;
+            padding: 15px 18px;
             border-radius: 8px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             border-left: 4px solid #c62828;
             font-size: 14px;
         }
@@ -110,9 +110,9 @@
         .success-message {
             background-color: #e8f5e9;
             color: #2e7d32;
-            padding: 12px 15px;
+            padding: 15px 18px;
             border-radius: 8px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             border-left: 4px solid #2e7d32;
             font-size: 14px;
         }
@@ -120,11 +120,11 @@
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 20px;
         }
 
         .terms-agreement {
-            margin-bottom: 25px;
+            margin-bottom: 30px;
         }
 
         .terms-agreement label {

@@ -14,13 +14,13 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #f5f5f5;
             min-height: 100vh;
-            padding: 20px;
+            padding: 30px;
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 1400px;
             margin: 0 auto;
             background: white;
             border-radius: 12px;
@@ -43,31 +43,31 @@
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 30px 40px;
+            padding: 40px 50px;
         }
 
         .header h1 {
-            font-size: 28px;
-            margin-bottom: 5px;
+            font-size: 32px;
+            margin-bottom: 8px;
         }
 
         .header .subtitle {
-            font-size: 14px;
+            font-size: 15px;
             opacity: 0.9;
         }
 
         .content {
-            padding: 40px;
+            padding: 50px;
         }
 
         .document-detail {
-            margin-bottom: 30px;
+            margin-bottom: 40px;
         }
 
         .detail-row {
             display: flex;
-            margin-bottom: 20px;
-            padding: 15px;
+            margin-bottom: 25px;
+            padding: 20px 25px;
             background-color: #f8f9fa;
             border-radius: 8px;
             border-left: 4px solid #667eea;
@@ -83,7 +83,7 @@
         .detail-label {
             font-weight: bold;
             color: #555;
-            min-width: 150px;
+            min-width: 180px;
             flex-shrink: 0;
             display: flex;
             align-items: center;
@@ -93,21 +93,21 @@
         .detail-value {
             color: #333;
             flex: 1;
-            line-height: 1.6;
+            line-height: 1.8;
         }
 
         .detail-value strong {
-            font-size: 18px;
+            font-size: 20px;
             color: #667eea;
         }
 
         .description-box {
             background-color: #fff;
-            padding: 20px;
+            padding: 25px;
             border: 2px solid #e9ecef;
             border-radius: 8px;
-            margin-top: 10px;
-            line-height: 1.8;
+            margin-top: 15px;
+            line-height: 2;
             white-space: pre-wrap;
             color: #555;
         }

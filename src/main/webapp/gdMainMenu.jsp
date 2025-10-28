@@ -13,19 +13,19 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #e9ecef;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 30px;
         }
 
         .container {
-            max-width: 900px;
+            max-width: 1200px;
             width: 100%;
             background: white;
-            padding: 40px;
+            padding: 50px;
             border-radius: 20px;
             box-shadow: 0 15px 50px rgba(0,0,0,0.3);
         }
@@ -35,60 +35,60 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
+            margin-bottom: 40px;
+            padding-bottom: 25px;
             border-bottom: 2px solid #f0f0f0;
         }
 
         .header-left h1 {
             color: #333;
-            font-size: 32px;
-            margin-bottom: 5px;
+            font-size: 36px;
+            margin-bottom: 8px;
         }
 
         .subtitle {
             color: #666;
-            font-size: 16px;
+            font-size: 17px;
         }
 
         .header-right {
             display: flex;
-            gap: 15px;
+            gap: 20px;
             align-items: center;
         }
 
         .user-avatar {
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 24px;
+            font-size: 28px;
             font-weight: bold;
         }
 
         .user-name {
             color: #333;
             font-weight: 600;
-            font-size: 16px;
+            font-size: 17px;
         }
 
         .user-role {
             color: #999;
-            font-size: 13px;
+            font-size: 14px;
         }
 
         .logout-btn {
             background: #ff4757;
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 24px;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 600;
             transition: all 0.3s;
             text-decoration: none;
@@ -105,35 +105,35 @@
         .welcome-box {
             background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
             border-left: 5px solid #667eea;
-            padding: 25px;
+            padding: 30px;
             border-radius: 10px;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
         }
 
         .welcome-box h3 {
             color: #667eea;
-            margin-bottom: 10px;
-            font-size: 20px;
+            margin-bottom: 12px;
+            font-size: 22px;
         }
 
         .user-info {
             color: #555;
-            font-size: 15px;
-            line-height: 1.6;
+            font-size: 16px;
+            line-height: 1.8;
         }
 
         /* Menu Grid */
         .menu-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 35px;
         }
 
         .menu-item {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 30px 20px;
+            padding: 35px 25px;
             border-radius: 15px;
             text-decoration: none;
             text-align: center;
@@ -285,7 +285,7 @@
         </a>
 
         <!-- Mượn tài liệu -->
-        <a href="borrow?action=create" class="menu-item">
+        <a href="borrowSlip?action=create" class="menu-item">
             <div class="icon">📖</div>
             <div class="title">Mượn Tài liệu</div>
             <div class="description">Đăng ký mượn tài liệu trực tuyến</div>

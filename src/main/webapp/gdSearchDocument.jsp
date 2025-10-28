@@ -14,36 +14,37 @@
         
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            padding: 20px;
+            background-color: #f5f5f5;
+            padding: 30px;
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             background: white;
-            padding: 30px;
+            padding: 50px;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
         h1 {
             color: #333;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
             text-align: center;
+            font-size: 32px;
         }
         
         .search-form {
             display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
+            gap: 15px;
+            margin-bottom: 40px;
             justify-content: center;
         }
         
         .search-input {
             flex: 1;
-            max-width: 500px;
-            padding: 12px 15px;
+            max-width: 600px;
+            padding: 15px 20px;
             border: 2px solid #ddd;
             border-radius: 5px;
             font-size: 16px;
@@ -55,7 +56,7 @@
         }
         
         .btn-search {
-            padding: 12px 30px;
+            padding: 15px 35px;
             background-color: #4CAF50;
             color: white;
             border: none;
@@ -70,8 +71,8 @@
         }
         
         .result-info {
-            margin-bottom: 20px;
-            padding: 10px;
+            margin-bottom: 25px;
+            padding: 15px 20px;
             background-color: #e7f3fe;
             border-left: 4px solid #2196F3;
             border-radius: 4px;
@@ -80,12 +81,12 @@
         .document-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-top: 25px;
         }
         
         .document-table th,
         .document-table td {
-            padding: 12px;
+            padding: 18px 20px;
             text-align: left;
             border-bottom: 1px solid #ddd;
         }
@@ -106,7 +107,7 @@
         
         .no-result {
             text-align: center;
-            padding: 40px;
+            padding: 60px;
             color: #666;
             font-size: 18px;
         }
@@ -123,12 +124,12 @@
         
         .btn-back {
             display: inline-block;
-            padding: 10px 20px;
+            padding: 12px 25px;
             background-color: #f44336;
             color: white;
             text-decoration: none;
             border-radius: 5px;
-            margin-top: 20px;
+            margin-top: 25px;
         }
         
         .btn-back:hover {
