@@ -4,7 +4,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Đăng nhập - LibMan</title>
+    <title>LibMan System - Đăng nhập</title>
     <style>
         * {
             margin: 0;
@@ -134,7 +134,7 @@
         .btn-login {
             width: 100%;
             padding: 16px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             color: white;
             border: none;
             border-radius: 8px;
@@ -147,6 +147,7 @@
         .btn-login:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+            background: #5568d3;
         }
 
         .btn-login:active {
@@ -216,7 +217,6 @@
 <body>
 <div class="login-container">
     <div class="logo">
-        <div class="icon">📚</div>
         <h1>LibMan System</h1>
         <p>Hệ thống Quản lý Thư viện</p>
     </div>
@@ -224,14 +224,14 @@
     <!-- Hiển thị thông báo lỗi -->
     <c:if test="${not empty error}">
         <div class="error-message">
-            ❌ ${error}
+            ${error}
         </div>
     </c:if>
 
     <!-- Hiển thị thông báo thành công -->
     <c:if test="${not empty success}">
         <div class="success-message">
-            ✅ ${success}
+            ${success}
         </div>
     </c:if>
 
@@ -258,15 +258,15 @@
                        required>
         </div>
 
-        <div class="remember-forgot">
+<%--        <div class="remember-forgot">--%>
 <%--            <label>--%>
 <%--                <input type="checkbox" name="remember" value="true">--%>
 <%--                Ghi nhớ đăng nhập--%>
 <%--            </label>--%>
-            <a href="#" onclick="alert('Chức năng đang phát triển!'); return false;">
-                Quên mật khẩu?
-            </a>
-        </div>
+<%--            <a href="#" onclick="alert('Chức năng đang phát triển!'); return false;">--%>
+<%--                Quên mật khẩu?--%>
+<%--            </a>--%>
+<%--        </div>--%>
 
         <button type="submit" class="btn-login">
             Đăng nhập

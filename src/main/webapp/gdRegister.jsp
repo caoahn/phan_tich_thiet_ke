@@ -4,12 +4,12 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Đăng ký - LibMan</title>
+    <title>LibMan System - Đăng ký</title>
     <style>
         * {
-            margin: 0;
             padding: 0;
-            box-sizing: border-box;
+            margin: 0;
+             box-sizing: border-box;
         }
 
         body {
@@ -36,11 +36,6 @@
         .logo {
             text-align: center;
             margin-bottom: 40px;
-        }
-
-        .logo .icon {
-            font-size: 72px;
-            margin-bottom: 15px;
         }
 
         .logo h1 {
@@ -155,7 +150,7 @@
         .btn-register {
             width: 100%;
             padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             color: white;
             border: none;
             border-radius: 8px;
@@ -168,6 +163,7 @@
         .btn-register:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+            background: #5568d3;
         }
 
         .btn-register:active {
@@ -304,14 +300,13 @@
 <body>
 <div class="register-container">
     <div class="logo">
-        <div class="icon">📚</div>
         <h1>Đăng ký tài khoản</h1>
         <p>Hệ thống Quản lý Thư viện LibMan</p>
     </div>
 
     <c:if test="${not empty error}">
         <div class="error-message">
-            ❌ ${error}
+            ${error}
         </div>
     </c:if>
 

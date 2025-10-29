@@ -4,7 +4,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Tìm kiếm Tài liệu - LibMan</title>
+    <title>LibMan System - Tìm kiếm Tài liệu</title>
     <style>
         * {
             margin: 0;
@@ -17,7 +17,7 @@
             background-color: #f5f5f5;
             padding: 30px;
         }
-        
+
         .container {
             max-width: 1400px;
             margin: 0 auto;
@@ -52,12 +52,12 @@
         
         .search-input:focus {
             outline: none;
-            border-color: #4CAF50;
+            border-color: #667eea;
         }
         
         .btn-search {
             padding: 15px 35px;
-            background-color: #4CAF50;
+            background-color: #667eea;
             color: white;
             border: none;
             border-radius: 5px;
@@ -67,14 +67,14 @@
         }
         
         .btn-search:hover {
-            background-color: #45a049;
+            background-color: #5568d3;
         }
         
         .result-info {
             margin-bottom: 25px;
             padding: 15px 20px;
-            background-color: #e7f3fe;
-            border-left: 4px solid #2196F3;
+            background-color: #f0f4ff;
+            border-left: 4px solid #667eea;
             border-radius: 4px;
         }
         
@@ -92,7 +92,7 @@
         }
         
         .document-table th {
-            background-color: #4CAF50;
+            background-color: #667eea;
             color: white;
             font-weight: bold;
         }
@@ -113,7 +113,7 @@
         }
         
         .link-detail {
-            color: #2196F3;
+            color: #667eea;
             text-decoration: none;
             font-weight: bold;
         }
@@ -125,7 +125,7 @@
         .btn-back {
             display: inline-block;
             padding: 12px 25px;
-            background-color: #f44336;
+            background-color: #6c757d;
             color: white;
             text-decoration: none;
             border-radius: 5px;
@@ -133,14 +133,14 @@
         }
         
         .btn-back:hover {
-            background-color: #da190b;
+            background-color: #5a6268;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🔍 Tìm kiếm Tài liệu</h1>
-        
+        <h1>LibMan System - Tìm kiếm Tài liệu</h1>
+
         <!-- Form tìm kiếm -->
         <form action="document" method="get" class="search-form">
             <input type="hidden" name="action" value="search">
@@ -195,7 +195,7 @@
             </c:when>
             <c:otherwise>
                 <div class="no-result">
-                    <p>😔 Không tìm thấy tài liệu nào!</p>
+                    <p>Không tìm thấy tài liệu nào!</p>
                     <c:if test="${searchPerformed}">
                         <p>Vui lòng thử từ khóa khác.</p>
                     </c:if>

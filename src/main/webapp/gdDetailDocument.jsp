@@ -4,7 +4,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Chi tiết Tài liệu - LibMan</title>
+    <title>LibMan System - Chi tiết Tài liệu</title>
     <style>
         * {
             margin: 0;
@@ -41,7 +41,7 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             color: white;
             padding: 40px 50px;
         }
@@ -57,17 +57,17 @@
         }
 
         .content {
-            padding: 50px;
+            padding: 30px 50px;
         }
 
         .document-detail {
-            margin-bottom: 40px;
+            margin-bottom: 25px;
         }
 
         .detail-row {
             display: flex;
-            margin-bottom: 25px;
-            padding: 20px 25px;
+            margin-bottom: 12px;
+            padding: 12px 18px;
             background-color: #f8f9fa;
             border-radius: 8px;
             border-left: 4px solid #667eea;
@@ -83,7 +83,7 @@
         .detail-label {
             font-weight: bold;
             color: #555;
-            min-width: 180px;
+            min-width: 150px;
             flex-shrink: 0;
             display: flex;
             align-items: center;
@@ -93,28 +93,28 @@
         .detail-value {
             color: #333;
             flex: 1;
-            line-height: 1.8;
+            line-height: 1.6;
         }
 
         .detail-value strong {
-            font-size: 20px;
+            font-size: 18px;
             color: #667eea;
         }
 
         .description-box {
             background-color: #fff;
-            padding: 25px;
+            padding: 18px;
             border: 2px solid #e9ecef;
             border-radius: 8px;
-            margin-top: 15px;
-            line-height: 2;
+            margin-top: 10px;
+            line-height: 1.8;
             white-space: pre-wrap;
             color: #555;
         }
 
         .tag {
             display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             color: white;
             padding: 5px 15px;
             border-radius: 20px;
@@ -124,16 +124,16 @@
 
         /* Thống kê bản sao */
         .stats-section {
-            margin: 30px 0;
-            padding: 25px;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            margin: 20px 0;
+            padding: 20px;
+            background: #f0f4ff;
             border-radius: 12px;
         }
 
         .stats-section h2 {
             color: #333;
-            margin-bottom: 20px;
-            font-size: 20px;
+            margin-bottom: 15px;
+            font-size: 18px;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -215,13 +215,13 @@
 
         /* Bảng danh sách bản sao */
         .copies-section {
-            margin: 30px 0;
+            margin: 20px 0;
         }
 
         .copies-section h2 {
             color: #333;
-            margin-bottom: 20px;
-            font-size: 20px;
+            margin-bottom: 15px;
+            font-size: 18px;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -237,7 +237,7 @@
         }
 
         .copies-table thead {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             color: white;
         }
 
@@ -304,11 +304,11 @@
         }
 
         .button-group {
-            margin-top: 30px;
+            margin-top: 20px;
             display: flex;
             gap: 15px;
             flex-wrap: wrap;
-            padding-top: 20px;
+            padding-top: 15px;
             border-top: 2px solid #e9ecef;
         }
 
@@ -412,7 +412,7 @@
     <c:if test="${not empty document}">
         <!-- Header -->
         <div class="header">
-            <h1>📚 Chi tiết Tài liệu</h1>
+            <h1>LibMan System - Chi tiết Tài liệu</h1>
             <div class="subtitle">Xem thông tin đầy đủ về tài liệu</div>
         </div>
 
@@ -421,7 +421,7 @@
             <div class="document-detail">
                 <div class="detail-row">
                     <div class="detail-label">
-                        🔖 Mã tài liệu:
+                        Mã tài liệu:
                     </div>
                     <div class="detail-value">
                         <span class="tag">#${document.id}</span>
@@ -430,7 +430,7 @@
 
                 <div class="detail-row">
                     <div class="detail-label">
-                        📖 Tên tài liệu:
+                        Tên tài liệu:
                     </div>
                     <div class="detail-value">
                         <strong>${document.name}</strong>
@@ -439,21 +439,21 @@
 
                 <div class="detail-row">
                     <div class="detail-label">
-                        ✍️ Tác giả:
+                        Tác giả:
                     </div>
                     <div class="detail-value">${document.author}</div>
                 </div>
 
                 <div class="detail-row">
                     <div class="detail-label">
-                        📅 Năm xuất bản:
+                        Năm xuất bản:
                     </div>
                     <div class="detail-value">${document.publishedYear}</div>
                 </div>
 
                 <div class="detail-row" style="display: block;">
                     <div class="detail-label">
-                        📝 Mô tả chi tiết:
+                        Mô tả chi tiết:
                     </div>
                     <div class="description-box">
                         <c:choose>
@@ -471,7 +471,7 @@
             <!-- Danh sách bản sao chi tiết -->
             <c:if test="${not empty copies}">
                 <div class="copies-section">
-                    <h2>📑 Danh sách các bản sao</h2>
+                    <h2> Danh sách các bản sao</h2>
                     <table class="copies-table">
                         <thead>
                         <tr>
@@ -491,13 +491,13 @@
                                             <span class="status-badge status-available">✓ Có sẵn</span>
                                         </c:when>
                                         <c:when test="${copy.status == 'borrowed'}">
-                                            <span class="status-badge status-borrowed">📤 Đang mượn</span>
+                                            <span class="status-badge status-borrowed"> Đang mượn</span>
                                         </c:when>
                                         <c:when test="${copy.status == 'damaged'}">
-                                            <span class="status-badge status-damaged">⚠ Hư hỏng</span>
+                                            <span class="status-badge status-damaged"> Hỏng</span>
                                         </c:when>
                                         <c:when test="${copy.status == 'lost'}">
-                                            <span class="status-badge status-lost">❌ Mất</span>
+                                            <span class="status-badge status-lost"> Mất</span>
                                         </c:when>
                                     </c:choose>
                                 </td>
@@ -519,7 +519,7 @@
 
     <c:if test="${empty document}">
         <div class="header">
-            <h1>❌ Không tìm thấy tài liệu</h1>
+            <h1>Không tìm thấy tài liệu</h1>
         </div>
         <div class="content">
             <div class="empty-state">

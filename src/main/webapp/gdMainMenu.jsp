@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>LibMan - Hệ thống Quản lý Thư viện</title>
+    <title>LibMan System - Menu Chính</title>
     <style>
         * {
             margin: 0;
@@ -61,7 +61,7 @@
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -103,7 +103,7 @@
 
         /* Welcome Box */
         .welcome-box {
-            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            background: #f0f4ff;
             border-left: 5px solid #667eea;
             padding: 30px;
             border-radius: 10px;
@@ -131,7 +131,7 @@
         }
 
         .menu-item {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             color: white;
             padding: 35px 25px;
             border-radius: 15px;
@@ -152,10 +152,12 @@
             height: 100%;
             background: rgba(255, 255, 255, 0.1);
             transition: all 0.3s;
+            display: none;
         }
 
         .menu-item:hover::before {
             left: 100%;
+            display: none;
         }
 
         .menu-item:hover {
@@ -183,7 +185,7 @@
 
         /* Disabled menu item */
         .menu-item.disabled {
-            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            background: #95a5a6;
             cursor: not-allowed;
             opacity: 0.6;
         }
@@ -191,6 +193,7 @@
         .menu-item.disabled:hover {
             transform: none;
             box-shadow: 0 5px 20px rgba(149, 165, 166, 0.3);
+            background: #95a5a6;
         }
 
         /* Stats Section */
@@ -248,26 +251,23 @@
     <!-- Header với thông tin user và nút logout -->
     <div class="header">
         <div class="header-left">
-            <h1>📚 LibMan System</h1>
+            <h1>LibMan System</h1>
             <p class="subtitle">Hệ thống Quản lý Thư viện Đại học</p>
         </div>
         <div class="header-right">
-            <div class="user-avatar">
-                ${sessionScope.username != null ? sessionScope.member.username.substring(0,1).toUpperCase() : 'U'}
-            </div>
             <div>
                 <div class="user-name">${sessionScope.member.username != null ? sessionScope.member.username : 'Guest'}</div>
                 <div class="user-role">${sessionScope.member.role != null ? sessionScope.member.role : 'Khách'}</div>
             </div>
             <a href="auth?action=logout" class="logout-btn">
-                🚪 Đăng xuất
+                Đăng xuất
             </a>
         </div>
     </div>
 
     <!-- Welcome Box -->
     <div class="welcome-box">
-        <h3>👋 Xin chào, ${sessionScope.member.username != null ? sessionScope.member.username : 'Bạn đọc'}!</h3>
+        <h3>Xin chào, ${sessionScope.member.username != null ? sessionScope.member.username : 'Bạn đọc'}!</h3>
         <p class="user-info">
             Chào mừng bạn đến với hệ thống quản lý thư viện.
             Hệ thống cung cấp các dịch vụ tra cứu, mượn trả tài liệu và quản lý thông tin bạn đọc.
@@ -279,14 +279,12 @@
     <div class="menu-grid">
         <!-- Tìm kiếm tài liệu -->
         <a href="document?action=list" class="menu-item">
-            <div class="icon">🔍</div>
             <div class="title">Tìm kiếm Tài liệu</div>
             <div class="description">Tìm kiếm và xem thông tin tài liệu trong thư viện</div>
         </a>
 
         <!-- Mượn tài liệu -->
         <a href="borrowSlip?action=create" class="menu-item">
-            <div class="icon">📖</div>
             <div class="title">Mượn Tài liệu</div>
             <div class="description">Đăng ký mượn tài liệu trực tuyến</div>
         </a>
@@ -298,7 +296,6 @@
     <% if(request.getParameter("message") != null) { %>
     alert('<%= request.getParameter("message") %>');
     <% } %>
-
 </script>
 </body>
 </html>
