@@ -75,41 +75,6 @@ public class DocumentDAO extends DAO {
         return document;
     }
 
-
-    // Method bổ sung: Lấy danh sách các bản sao cụ thể
-    public List<DocumentCopy> getDocumentCopies(int documentId) {
-        List<DocumentCopy> copies = new ArrayList<>();
-
-        String sql = "SELECT id, document_code, status, created_at " +
-                "FROM document_copy " +
-                "WHERE document_id = ? " +
-                "ORDER BY document_code";
-
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setInt(1, documentId);
-
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                DocumentCopy copy = new DocumentCopy();
-                copy.setId(rs.getInt("id"));
-                copy.setDocumentCode(rs.getString("document_code"));
-                copy.setStatus(rs.getString("status"));
-                copies.add(copy);
-            }
-
-            rs.close();
-            ps.close();
-
-        } catch (SQLException e) {
-            System.err.println("Lỗi khi lấy danh sách bản sao!");
-            e.printStackTrace();
-        }
-
-        return copies;
-    }
-
     public List<Document> getAllDocuments() {
         List<Document> documentList = new ArrayList<>();
         

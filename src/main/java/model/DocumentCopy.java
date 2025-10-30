@@ -5,6 +5,7 @@ public class DocumentCopy {
     private String documentCode;
     private String status;
     private int documentId;
+    private String bookName;
 
     public DocumentCopy() {
     }
@@ -46,5 +47,12 @@ public class DocumentCopy {
 
     public void setDocumentId(int documentId) {
         this.documentId = documentId;
+    }
+
+    public String getBookName() {
+        return bookName;
+    }
+    public void setBookName(String bookName) {
+        this.bookName = bookName;
     }
 }

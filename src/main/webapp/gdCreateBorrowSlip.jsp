@@ -48,9 +48,20 @@
         .btn-danger:hover { background: #c82333; }
         .btn-back { background-color: #6c757d; color: white; text-decoration: none; margin-left: auto; }
         .btn-back:hover { background-color: #5a6268; text-decoration: none; }
-        #docError, #readerError { margin-top: 15px; padding: 12px 16px; color: #dc2626; background: #fee2e2; border: 2px solid #ef4444; border-radius: 8px; font-weight: 600; animation: shake 0.3s ease; }
-        fieldset { border: 2px dashed #dee2e6; border-radius: 12px; padding: 0; margin: 0; }
-        fieldset:disabled { opacity: 0.6; background: #f8f9fa; }
+        #docError, #readerError {
+            margin-top: 20px;
+            padding: 16px 0;
+            padding-left: 20px;
+            color: #dc2626;
+            background: transparent;
+            border: none;
+            border-left: 4px solid #dc3545;
+            font-weight: 500;
+            font-size: 15px;
+            animation: shake 0.3s ease;
+        }
+        fieldset { border: none; padding: 0; margin: 0; }
+        fieldset:disabled { opacity: 0.6; }
         fieldset:disabled .section { background: #f1f3f5; }
         table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 20px; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         th, td { padding: 16px 20px; text-align: left; border-bottom: 1px solid #e9ecef; }
@@ -80,10 +91,9 @@
 
         #readerInfo {
             margin-top: 20px;
-            padding: 20px;
-            background: #e6f7ff;
-            border: 2px solid #096dd9;
-            border-radius: 10px;
+            padding: 20px 0;
+            border-left: 4px solid #667eea;
+            padding-left: 20px;
             animation: slideIn 0.3s ease;
         }
 
@@ -106,19 +116,23 @@
 
         .reader-info-grid {
             display: grid;
-            grid-template-columns: 140px 1fr;
-            gap: 12px;
+            grid-template-columns: 130px 1fr;
+            gap: 16px 20px;
             align-items: center;
         }
 
         .reader-info-grid strong {
-            color: #096dd9;
+            color: #495057;
             font-weight: 600;
+            font-size: 14px;
         }
 
         .reader-info-grid span {
-            color: #333;
+            color: #212529;
             font-weight: 500;
+            font-size: 15px;
+            padding: 6px 0;
+            border-bottom: 1px solid #e9ecef;
         }
 
         .status-active {
@@ -204,311 +218,239 @@
     </div>
 </div>
 
-<%--<script>--%>
-<%--    // Biến lưu trữ trạng thái của phiên mượn--%>
-<%--    let currentReaderId = null;--%>
-<%--    let borrowCart = []; // Mảng lưu các đối tượng { copyId, code, name }--%>
+<script>
+    // Khai báo các biến global
+    let currentReaderId = null;
+    let borrowCart = [];
 
-<%--    // --- MÔ PHỎNG BACKEND (HARD CODE) -----%>
-<%--    // Dữ liệu đã được cập nhật để khớp với Database của bạn--%>
+    // Hàm fakeSubmitSlip giữ nguyên như cũ
+    function fakeSubmitSlip(readerId, cart) {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                console.log("ĐANG GỬI LÊN SERVER:", { readerId, cart });
+                resolve({ success: true, slipId: 101 });
+            }, 1000);
+        });
+    }
 
-<%--    /**--%>
-<%--     * Mô phỏng việc kiểm tra mã độc giả.--%>
-<%--     * Sẽ trả về dữ liệu dựa trên schema (reader, member, library_card)--%>
-<%--     */--%>
-<%--    function fakeCheckReader(readerCode) {--%>
-<%--        return new Promise((resolve, reject) => {--%>
-<%--            setTimeout(() => {--%>
-<%--                // Mã này khớp với ví dụ "DGR_12345" bạn từng đưa ra--%>
-<%--                if (readerCode.toUpperCase() === 'DGR_12345') {--%>
-<%--                    resolve({--%>
-<%--                        success: true,--%>
-<%--                        readerId: 45, // Từ bảng reader--%>
-<%--                        readerCode: 'DGR_12345',--%>
-<%--                        username: 'nguyenvana', // Từ bảng member--%>
-<%--                        email: 'vana@example.com', // Từ bảng member--%>
-<%--                        phone: '0987654321', // Từ bảng member--%>
-<%--                        cardStatus: 'active', // Từ bảng library_card--%>
-<%--                        cardExpiry: '2026-10-28' // Từ bảng library_card--%>
-<%--                    });--%>
-<%--                } else {--%>
-<%--                    resolve({ success: false, error: "Thẻ không hợp lệ hoặc đã hết hạn!" });--%>
-<%--                }--%>
-<%--            }, 500);--%>
-<%--        });--%>
-<%--    }--%>
+    // --- LOGIC CỦA GIAO DIỆN ---
+    document.addEventListener('DOMContentLoaded', () => {
 
-<%--    /**--%>
-<%--     * Mô phỏng việc kiểm tra mã tài liệu.--%>
-<%--     * Dữ liệu khớp với bảng document_copy bạn đã cung cấp--%>
-<%--     */--%>
-<%--    function fakeCheckDocument(docCode) {--%>
-<%--        return new Promise((resolve, reject) => {--%>
-<%--            docCode = docCode.toUpperCase();--%>
+        // Lấy các phần tử DOM
+        const readerCodeInput = document.getElementById('readerCodeInput');
 
-<%--            // Dữ liệu mẫu từ DB của bạn--%>
-<%--            const copyDatabase = {--%>
-<%--                'DOC-1-1': { success: true, copyId: 1, copyCode: 'DOC-1-1', bookName: 'Clean Code: A Handbook of Agile Software Craftsmanship', status: 'available' },--%>
-<%--                'DOC-1-2': { success: false, error: "Sách này đã được mượn! (Mã: DOC-1-2)", status: 'borrowed' },--%>
-<%--                'DOC-2-1': { success: true, copyId: 4, copyCode: 'DOC-2-1', bookName: 'Design Patterns: Elements of Reusable Object-Oriented Software', status: 'available' },--%>
-<%--                'DOC-2-3': { success: false, error: "Sách này bị hỏng, không thể mượn. (Mã: DOC-2-3)", status: 'damaged' },--%>
-<%--                'DOC-7-2': { success: false, error: "Sách này đã bị báo mất. (Mã: DOC-7-2)", status: 'lost' },--%>
-<%--                'DOC-14-3': { success: false, error: "Sách này đã được mượn! (Mã: DOC-14-3)", status: 'borrowed' }--%>
-<%--            };--%>
+        const checkReaderBtn = document.getElementById('checkReaderBtn');
+        const readerInfoDiv = document.getElementById('readerInfo');
+        const readerErrorDiv = document.getElementById('readerError');
+        const docFieldset = document.getElementById('doc-fieldset');
+        const documentCodeInput = document.getElementById('documentCodeInput');
+        const addDocBtn = document.getElementById('addDocBtn');
+        const docErrorDiv = document.getElementById('docError');
+        const cartBody = document.getElementById('cartBody');
+        const submitSlipBtn = document.getElementById('submitSlipBtn');
 
-<%--            setTimeout(() => {--%>
-<%--                const result = copyDatabase[docCode];--%>
-<%--                if (result) {--%>
-<%--                    resolve(result);--%>
-<%--                } else {--%>
-<%--                    resolve({ success: false, error: `Không tìm thấy tài liệu với mã '${docCode}'.`, status: "notfound" });--%>
-<%--                }--%>
-<%--            }, 500);--%>
-<%--        });--%>
-<%--    }--%>
+        // --- 1: XỬ LÝ KIỂM TRA ĐỘC GiẢ ---
+        checkReaderBtn.addEventListener('click', handleCheckReader);
+        readerCodeInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleCheckReader();
+        });
 
-<%--    // Hàm fakeSubmitSlip giữ nguyên như cũ--%>
-<%--    function fakeSubmitSlip(readerId, cart) {--%>
-<%--        return new Promise((resolve, reject) => {--%>
-<%--            setTimeout(() => {--%>
-<%--                console.log("ĐANG GỬI LÊN SERVER:", { readerId, cart });--%>
-<%--                resolve({ success: true, slipId: 101 });--%>
-<%--            }, 1000);--%>
-<%--        });--%>
-<%--    }--%>
+        async function handleCheckReader() {
+            const readerCode = readerCodeInput.value;
+            console.log(readerCode)
+            if (!readerCode) return;
 
-<%--    // --- LOGIC CỦA GIAO DIỆN -----%>
-<%--    document.addEventListener('DOMContentLoaded', () => {--%>
+            const url = `reader?action=checkReader&readerCode=\${encodeURIComponent(readerCode)}`;
+            const response = await fetch(url);
+            const data = await response.json();
 
-<%--        // Lấy các phần tử DOM--%>
-<%--        const readerCodeInput = document.getElementById('readerCodeInput');--%>
-<%--        const checkReaderBtn = document.getElementById('checkReaderBtn');--%>
-<%--        const readerInfoDiv = document.getElementById('readerInfo');--%>
-<%--        const readerErrorDiv = document.getElementById('readerError');--%>
-<%--        const docFieldset = document.getElementById('doc-fieldset');--%>
-<%--        const documentCodeInput = document.getElementById('documentCodeInput');--%>
-<%--        const addDocBtn = document.getElementById('addDocBtn');--%>
-<%--        const docErrorDiv = document.getElementById('docError');--%>
-<%--        const cartBody = document.getElementById('cartBody');--%>
-<%--        const submitSlipBtn = document.getElementById('submitSlipBtn');--%>
+            if (data.success) {
+                currentReaderId = data.readerId;
 
-<%--        // --- BƯỚC 1: XỬ LÝ KIỂM TRA ĐỘC GiẢ -----%>
-<%--        checkReaderBtn.addEventListener('click', handleCheckReader);--%>
-<%--        readerCodeInput.addEventListener('keypress', (e) => {--%>
-<%--            if (e.key === 'Enter') handleCheckReader();--%>
-<%--        });--%>
+                readerInfoDiv.innerHTML = '';
 
-<%--        async function handleCheckReader() {--%>
-<%--            const readerCode = readerCodeInput.value;--%>
-<%--            if (!readerCode) return;--%>
+                const infoGrid = document.createElement('div');
+                infoGrid.className = 'reader-info-grid';
 
-<%--            // **THAY THẾ CHỖ NÀY BẰNG `fetch`**--%>
-<%--            const data = await fakeCheckReader(readerCode);--%>
+                // Mã độc giả
+                const lblCode = document.createElement('strong');
+                lblCode.textContent = 'Mã Độc Giả:';
+                const valCode = document.createElement('span');
+                valCode.textContent = data.readerCode;
 
-<%--            if (data.success) {--%>
-<%--                currentReaderId = data.readerId;--%>
+                // Tên tài khoản
+                const lblUsername = document.createElement('strong');
+                lblUsername.textContent = 'Tên tài khoản:';
+                const valUsername = document.createElement('span');
+                valUsername.textContent = data.username;
 
-<%--                // **SỬA ĐỔI: Tạo DOM elements thay vì innerHTML để tránh lỗi encoding**--%>
-<%--                readerInfoDiv.innerHTML = ''; // Xóa nội dung cũ--%>
+                // Email
+                const lblEmail = document.createElement('strong');
+                lblEmail.textContent = 'Email:';
+                const valEmail = document.createElement('span');
+                valEmail.textContent = data.email;
 
-<%--                const infoGrid = document.createElement('div');--%>
-<%--                infoGrid.className = 'reader-info-grid';--%>
+                // Điện thoại
+                const lblPhone = document.createElement('strong');
+                lblPhone.textContent = 'Điện thoại:';
+                const valPhone = document.createElement('span');
+                valPhone.textContent = data.phone;
 
-<%--                // Mã độc giả--%>
-<%--                const lblCode = document.createElement('strong');--%>
-<%--                lblCode.textContent = 'Mã Độc Giả:';--%>
-<%--                const valCode = document.createElement('span');--%>
-<%--                valCode.textContent = data.readerCode;--%>
+                // Thêm tất cả vào grid
+                infoGrid.appendChild(lblCode);
+                infoGrid.appendChild(valCode);
+                infoGrid.appendChild(lblUsername);
+                infoGrid.appendChild(valUsername);
+                infoGrid.appendChild(lblEmail);
+                infoGrid.appendChild(valEmail);
+                infoGrid.appendChild(lblPhone);
+                infoGrid.appendChild(valPhone);
 
-<%--                // Tên tài khoản--%>
-<%--                const lblUsername = document.createElement('strong');--%>
-<%--                lblUsername.textContent = 'Tên tài khoản:';--%>
-<%--                const valUsername = document.createElement('span');--%>
-<%--                valUsername.textContent = data.username;--%>
+                readerInfoDiv.appendChild(infoGrid);
+                readerInfoDiv.style.display = 'block';
+                readerErrorDiv.style.display = 'none';
 
-<%--                // Email--%>
-<%--                const lblEmail = document.createElement('strong');--%>
-<%--                lblEmail.textContent = 'Email:';--%>
-<%--                const valEmail = document.createElement('span');--%>
-<%--                valEmail.textContent = data.email;--%>
+                // Kích hoạt bước 2 và 3
+                docFieldset.disabled = false;
+                submitSlipBtn.disabled = false;
+                documentCodeInput.focus();
+            } else {
+                currentReaderId = null;
+                readerInfoDiv.style.display = 'none';
+                readerErrorDiv.textContent = data.message;
+                readerErrorDiv.style.display = 'block';
 
-<%--                // Điện thoại--%>
-<%--                const lblPhone = document.createElement('strong');--%>
-<%--                lblPhone.textContent = 'Điện thoại:';--%>
-<%--                const valPhone = document.createElement('span');--%>
-<%--                valPhone.textContent = data.phone;--%>
+                // Vô hiệu hóa bước 2 và 3
+                docFieldset.disabled = true;
+                submitSlipBtn.disabled = true;
+            }
+        }
 
-<%--                // Trạng thái thẻ--%>
-<%--                const lblStatus = document.createElement('strong');--%>
-<%--                lblStatus.textContent = 'Trạng thái thẻ:';--%>
-<%--                const valStatus = document.createElement('span');--%>
-<%--                valStatus.className = (data.cardStatus === 'active') ? 'status-active' : 'status-expired';--%>
-<%--                valStatus.textContent = data.cardStatus.toUpperCase();--%>
+        // --- 2: XỬ LÝ THÊM TÀI LIỆU ---
+        addDocBtn.addEventListener('click', handleAddDocument);
+        documentCodeInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleAddDocument();
+        });
 
-<%--                // Hạn thẻ--%>
-<%--                const lblExpiry = document.createElement('strong');--%>
-<%--                lblExpiry.textContent = 'Hạn thẻ:';--%>
-<%--                const valExpiry = document.createElement('span');--%>
-<%--                valExpiry.textContent = new Date(data.cardExpiry).toLocaleDateString('vi-VN');--%>
+        async function handleAddDocument() {
+            const docCode = documentCodeInput.value;
+            if (!docCode) return;
 
-<%--                // Thêm tất cả vào grid--%>
-<%--                infoGrid.appendChild(lblCode);--%>
-<%--                infoGrid.appendChild(valCode);--%>
-<%--                infoGrid.appendChild(lblUsername);--%>
-<%--                infoGrid.appendChild(valUsername);--%>
-<%--                infoGrid.appendChild(lblEmail);--%>
-<%--                infoGrid.appendChild(valEmail);--%>
-<%--                infoGrid.appendChild(lblPhone);--%>
-<%--                infoGrid.appendChild(valPhone);--%>
-<%--                infoGrid.appendChild(lblStatus);--%>
-<%--                infoGrid.appendChild(valStatus);--%>
-<%--                infoGrid.appendChild(lblExpiry);--%>
-<%--                infoGrid.appendChild(valExpiry);--%>
+            // Kiểm tra trùng lặp trong giỏ
+            if (borrowCart.find(item => item.copyCode.toUpperCase() === docCode.toUpperCase())) {
+                docErrorDiv.textContent = "Tài liệu này đã có trong giỏ!";
+                docErrorDiv.style.display = 'block';
+                documentCodeInput.value = '';
+                return;
+            }
 
-<%--                readerInfoDiv.appendChild(infoGrid);--%>
-<%--                readerInfoDiv.style.display = 'block';--%>
-<%--                readerErrorDiv.style.display = 'none';--%>
+            const url = `borrowSlip?action=checkExistDocumentCopy&documentCode=\${encodeURIComponent(docCode)}`;
+            const response = await fetch(url);
+            const data = await response.json();
 
-<%--                // Kích hoạt bước 2 và 3--%>
-<%--                docFieldset.disabled = false;--%>
-<%--                submitSlipBtn.disabled = false;--%>
-<%--                documentCodeInput.focus();--%>
-<%--            } else {--%>
-<%--                currentReaderId = null;--%>
-<%--                readerInfoDiv.style.display = 'none';--%>
-<%--                readerErrorDiv.textContent = data.error;--%>
-<%--                readerErrorDiv.style.display = 'block';--%>
+            if (data.success && data.status === 'available') {
+                borrowCart.push({
+                    copyId: data.copyId,
+                    copyCode: data.copyCode,
+                    bookName: data.bookName
+                });
 
-<%--                // Vô hiệu hóa bước 2 và 3--%>
-<%--                docFieldset.disabled = true;--%>
-<%--                submitSlipBtn.disabled = true;--%>
-<%--            }--%>
-<%--        }--%>
+                updateCartTable();
+                docErrorDiv.style.display = 'none';
+                documentCodeInput.value = '';
+                documentCodeInput.focus();
+            } else {
+                docErrorDiv.textContent = data.error;
+                docErrorDiv.style.display = 'block';
+            }
+        }
 
-<%--        // --- BƯỚC 2: XỬ LÝ THÊM TÀI LIỆU -----%>
-<%--        addDocBtn.addEventListener('click', handleAddDocument);--%>
-<%--        documentCodeInput.addEventListener('keypress', (e) => {--%>
-<%--            if (e.key === 'Enter') handleAddDocument();--%>
-<%--        });--%>
+        // --- CÁC HÀM TIỆN ÍCH (Giữ nguyên) ---
 
-<%--        async function handleAddDocument() {--%>
-<%--            const docCode = documentCodeInput.value;--%>
-<%--            if (!docCode) return;--%>
+        function updateCartTable() {
+            cartBody.innerHTML = '';
+            if (borrowCart.length === 0) {
+                cartBody.innerHTML = '<tr><td colspan="3" class="empty-cart">Chưa có tài liệu nào</td></tr>';
+                return;
+            }
+            borrowCart.forEach((item, index) => {
+                const row = document.createElement('tr');
 
-<%--            // Kiểm tra trùng lặp trong giỏ--%>
-<%--            if (borrowCart.find(item => item.copyCode.toUpperCase() === docCode.toUpperCase())) {--%>
-<%--                docErrorDiv.textContent = "Tài liệu này đã có trong giỏ!";--%>
-<%--                docErrorDiv.style.display = 'block';--%>
-<%--                documentCodeInput.value = '';--%>
-<%--                return;--%>
-<%--            }--%>
+                // Tạo cell cho mã sách
+                const codeCell = document.createElement('td');
+                codeCell.textContent = item.copyCode;
 
-<%--            // **THAY THẾ CHỖ NÀY BẰNG `fetch`**--%>
-<%--            const data = await fakeCheckDocument(docCode);--%>
+                // Tạo cell cho tên sách
+                const nameCell = document.createElement('td');
+                nameCell.textContent = item.bookName;
 
-<%--            if (data.success && data.status === 'available') {--%>
-<%--                borrowCart.push({--%>
-<%--                    copyId: data.copyId,--%>
-<%--                    copyCode: data.copyCode,--%>
-<%--                    bookName: data.bookName--%>
-<%--                });--%>
+                // Tạo cell cho nút xóa
+                const actionCell = document.createElement('td');
+                actionCell.style.textAlign = 'center';
 
-<%--                updateCartTable();--%>
-<%--                docErrorDiv.style.display = 'none';--%>
-<%--                documentCodeInput.value = '';--%>
-<%--                documentCodeInput.focus();--%>
-<%--            } else {--%>
-<%--                docErrorDiv.textContent = data.error;--%>
-<%--                docErrorDiv.style.display = 'block';--%>
-<%--            }--%>
-<%--        }--%>
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'btn btn-danger remove-btn';
+                removeBtn.setAttribute('data-index', index);
+                removeBtn.textContent = 'Xóa';
 
-<%--        // --- CÁC HÀM TIỆN ÍCH (Giữ nguyên) -----%>
+                actionCell.appendChild(removeBtn);
 
-<%--        function updateCartTable() {--%>
-<%--            cartBody.innerHTML = '';--%>
-<%--            if (borrowCart.length === 0) {--%>
-<%--                cartBody.innerHTML = '<tr><td colspan="3" class="empty-cart">📭 Chưa có tài liệu nào</td></tr>';--%>
-<%--                return;--%>
-<%--            }--%>
-<%--            borrowCart.forEach((item, index) => {--%>
-<%--                const row = document.createElement('tr');--%>
+                row.appendChild(codeCell);
+                row.appendChild(nameCell);
+                row.appendChild(actionCell);
 
-<%--                // Tạo cell cho mã sách--%>
-<%--                const codeCell = document.createElement('td');--%>
-<%--                codeCell.textContent = item.copyCode;--%>
+                cartBody.appendChild(row);
+            });
+        }
 
-<%--                // Tạo cell cho tên sách--%>
-<%--                const nameCell = document.createElement('td');--%>
-<%--                nameCell.textContent = item.bookName;--%>
+        cartBody.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-btn')) {
+                const indexToRemove = parseInt(e.target.dataset.index, 10);
+                borrowCart.splice(indexToRemove, 1);
+                updateCartTable();
+            }
+        });
 
-<%--                // Tạo cell cho nút xóa--%>
-<%--                const actionCell = document.createElement('td');--%>
-<%--                actionCell.style.textAlign = 'center';--%>
+        submitSlipBtn.addEventListener('click', handleSubmitSlip);
 
-<%--                const removeBtn = document.createElement('button');--%>
-<%--                removeBtn.className = 'btn btn-danger remove-btn';--%>
-<%--                removeBtn.setAttribute('data-index', index);--%>
-<%--                removeBtn.textContent = 'Xóa';--%>
+        async function handleSubmitSlip() {
+            if (borrowCart.length === 0) {
+                alert("Giỏ mượn đang rỗng. Vui lòng thêm tài liệu.");
+                return;
+            }
+            if (!currentReaderId) {
+                alert("Chưa xác nhận độc giả. Vui lòng quay lại Bước 1.");
+                return;
+            }
 
-<%--                actionCell.appendChild(removeBtn);--%>
+            const copyIds = borrowCart.map(item => item.copyId);
 
-<%--                row.appendChild(codeCell);--%>
-<%--                row.appendChild(nameCell);--%>
-<%--                row.appendChild(actionCell);--%>
+            // **THAY THẾ CHỖ NÀY BẰNG `fetch` POST**
+            const data = await fakeSubmitSlip(currentReaderId, borrowCart);
 
-<%--                cartBody.appendChild(row);--%>
-<%--            });--%>
-<%--        }--%>
+            if (data.success) {
+                alert(`Tạo phiếu mượn #${data.slipId} thành công!`);
+                // window.open(`printServlet?slipId=${data.slipId}`, '_blank');
+                resetForm();
+            } else {
+                alert("Lỗi: " + data.error);
+            }
+        }
 
-<%--        cartBody.addEventListener('click', (e) => {--%>
-<%--            if (e.target.classList.contains('remove-btn')) {--%>
-<%--                const indexToRemove = parseInt(e.target.dataset.index, 10);--%>
-<%--                borrowCart.splice(indexToRemove, 1);--%>
-<%--                updateCartTable();--%>
-<%--            }--%>
-<%--        });--%>
+        function resetForm() {
+            currentReaderId = null;
+            borrowCart = [];
+            updateCartTable();
+            readerCodeInput.value = '';
+            readerInfoDiv.style.display = 'none';
+            readerErrorDiv.style.display = 'none';
+            documentCodeInput.value = '';
+            docErrorDiv.style.display = 'none';
+            docFieldset.disabled = true;
+            submitSlipBtn.disabled = true;
+        }
 
-<%--        submitSlipBtn.addEventListener('click', handleSubmitSlip);--%>
-
-<%--        async function handleSubmitSlip() {--%>
-<%--            if (borrowCart.length === 0) {--%>
-<%--                alert("Giỏ mượn đang rỗng. Vui lòng thêm tài liệu.");--%>
-<%--                return;--%>
-<%--            }--%>
-<%--            if (!currentReaderId) {--%>
-<%--                alert("Chưa xác nhận độc giả. Vui lòng quay lại Bước 1.");--%>
-<%--                return;--%>
-<%--            }--%>
-
-<%--            const copyIds = borrowCart.map(item => item.copyId);--%>
-
-<%--            // **THAY THẾ CHỖ NÀY BẰNG `fetch` POST**--%>
-<%--            const data = await fakeSubmitSlip(currentReaderId, borrowCart);--%>
-
-<%--            if (data.success) {--%>
-<%--                alert(`Tạo phiếu mượn #${data.slipId} thành công!`);--%>
-<%--                // window.open(`printServlet?slipId=${data.slipId}`, '_blank');--%>
-<%--                resetForm();--%>
-<%--            } else {--%>
-<%--                alert("Lỗi: " + data.error);--%>
-<%--            }--%>
-<%--        }--%>
-
-<%--        function resetForm() {--%>
-<%--            currentReaderId = null;--%>
-<%--            borrowCart = [];--%>
-<%--            updateCartTable();--%>
-<%--            readerCodeInput.value = '';--%>
-<%--            readerInfoDiv.style.display = 'none';--%>
-<%--            readerErrorDiv.style.display = 'none';--%>
-<%--            documentCodeInput.value = '';--%>
-<%--            docErrorDiv.style.display = 'none';--%>
-<%--            docFieldset.disabled = true;--%>
-<%--            submitSlipBtn.disabled = true;--%>
-<%--        }--%>
-
-<%--    });--%>
-<%--</script>--%>
+    });
+</script>
 </body>
 </html>

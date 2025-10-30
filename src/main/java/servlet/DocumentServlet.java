@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package servlet;
+import dao.DocumentCopyDAO;
 import model.Document;
 import dao.DocumentDAO;
 import model.DocumentCopy;
@@ -23,11 +24,13 @@ import javax.servlet.http.HttpServletResponse;
 public class DocumentServlet extends HttpServlet {
     
     private DocumentDAO documentDAO;
+    private DocumentCopyDAO documentCopyDAO;
     
     @Override
     public void init() throws ServletException {
         // Khởi tạo DAO khi servlet được tạo
         documentDAO = new DocumentDAO();
+        documentCopyDAO = new DocumentCopyDAO();
     }
     
     /**
@@ -46,7 +49,7 @@ public class DocumentServlet extends HttpServlet {
         String action = request.getParameter("action");
         
         if (action == null) {
-            action = "list"; // Mặc định hiển thị danh sách
+            action = "list";
         }
         
         switch (action) {
@@ -120,7 +123,7 @@ public class DocumentServlet extends HttpServlet {
             Document document = documentDAO.getDetailDocument(documentId);
 
             // Lấy danh sách bản sao
-            List<DocumentCopy> copies = documentDAO.getDocumentCopies(documentId);
+            List<DocumentCopy> copies = documentCopyDAO.getDocumentCopies(documentId);
 
             request.setAttribute("document", document);
             request.setAttribute("copies", copies);
