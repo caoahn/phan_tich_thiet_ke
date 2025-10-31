@@ -7,8 +7,6 @@ package model;
 
 public class BorrowSlipDetail {
     private int id;
-    private String description;
-    private int borrowTaskDetailId;
     private int borrowSlipId;
     private int documentCopyId;
     private int librarianId;
@@ -16,10 +14,8 @@ public class BorrowSlipDetail {
     public BorrowSlipDetail() {
     }
 
-    public BorrowSlipDetail(int id, String description, int borrowTaskDetailId, int borrowSlipId, int documentCopyId, int librarianId) {
+    public BorrowSlipDetail(int id,  int borrowSlipId, int documentCopyId, int librarianId) {
         this.id = id;
-        this.description = description;
-        this.borrowTaskDetailId = borrowTaskDetailId;
         this.borrowSlipId = borrowSlipId;
         this.documentCopyId = documentCopyId;
         this.librarianId = librarianId;
@@ -31,22 +27,6 @@ public class BorrowSlipDetail {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public int getBorrowTaskDetailId() {
-        return borrowTaskDetailId;
-    }
-
-    public void setBorrowTaskDetailId(int borrowTaskDetailId) {
-        this.borrowTaskDetailId = borrowTaskDetailId;
     }
 
     public int getBorrowSlipId() {

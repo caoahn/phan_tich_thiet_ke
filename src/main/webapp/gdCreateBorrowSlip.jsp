@@ -223,17 +223,7 @@
     let currentReaderId = null;
     let borrowCart = [];
 
-    // Hàm fakeSubmitSlip giữ nguyên như cũ
-    function fakeSubmitSlip(readerId, cart) {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                console.log("ĐANG GỬI LÊN SERVER:", { readerId, cart });
-                resolve({ success: true, slipId: 101 });
-            }, 1000);
-        });
-    }
-
-    // --- LOGIC CỦA GIAO DIỆN ---
+    // LOGIC CỦA GIAO DIỆN ---
     document.addEventListener('DOMContentLoaded', () => {
 
         // Lấy các phần tử DOM
@@ -365,8 +355,7 @@
             }
         }
 
-        // --- CÁC HÀM TIỆN ÍCH (Giữ nguyên) ---
-
+        // --- CÁC HÀM TIỆN ÍCH ---
         function updateCartTable() {
             cartBody.innerHTML = '';
             if (borrowCart.length === 0) {
@@ -425,15 +414,39 @@
 
             const copyIds = borrowCart.map(item => item.copyId);
 
-            // **THAY THẾ CHỖ NÀY BẰNG `fetch` POST**
-            const data = await fakeSubmitSlip(currentReaderId, borrowCart);
+            // Gửi request tạo phiếu mượn với Transaction
+            try {
+                submitSlipBtn.disabled = true;
+                submitSlipBtn.textContent = 'Đang xử lý...';
+                console.log(currentReaderId)
+                const response = await fetch('borrowSlip?action=createBorrowSlip', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json;charset=UTF-8'
+                    },
+                    body: JSON.stringify({
+                        readerId: currentReaderId,
+                        copyIds: copyIds
+                    })
+                });
 
-            if (data.success) {
-                alert(`Tạo phiếu mượn #${data.slipId} thành công!`);
-                // window.open(`printServlet?slipId=${data.slipId}`, '_blank');
-                resetForm();
-            } else {
-                alert("Lỗi: " + data.error);
+                const data = await response.json();
+
+                if (data.success) {
+                    alert(`✓ Tạo phiếu mượn #${data.slipId} thành công!\n${data.message}`);
+                    // Có thể mở cửa sổ in phiếu
+                    // window.open(`printSlip.jsp?slipId=${data.slipId}`, '_blank');
+                    resetForm();
+                } else {
+                    alert("✗ Lỗi: " + data.error);
+                    submitSlipBtn.disabled = false;
+                    submitSlipBtn.textContent = 'In Phiếu';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert("✗ Lỗi kết nối: " + error.message);
+                submitSlipBtn.disabled = false;
+                submitSlipBtn.textContent = 'In Phiếu';
             }
         }
 
@@ -448,8 +461,8 @@
             docErrorDiv.style.display = 'none';
             docFieldset.disabled = true;
             submitSlipBtn.disabled = true;
+            submitSlipBtn.textContent = 'In Phiếu';
         }
-
     });
 </script>
 </body>
