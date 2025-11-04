@@ -158,6 +158,64 @@
             justify-content: flex-end;
             margin-top: 25px;
         }
+
+        /* Toast Notification Styles */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: #28a745;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 300px;
+            animation: slideInRight 0.3s ease, fadeOut 0.3s ease 2.7s;
+            font-weight: 500;
+            font-size: 15px;
+        }
+
+        .toast-success {
+            background: #28a745;
+        }
+
+        .toast-error {
+            background: #dc3545;
+        }
+
+        .toast-icon {
+            display: none;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 <body>
@@ -169,6 +227,9 @@
             Quay lại Menu
         </a>
     </h1>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
 
     <div class="top-row-grid">
         <div class="section">
@@ -238,6 +299,29 @@
         const docErrorDiv = document.getElementById('docError');
         const cartBody = document.getElementById('cartBody');
         const submitSlipBtn = document.getElementById('submitSlipBtn');
+        const toastContainer = document.getElementById('toastContainer');
+
+        // Hàm hiển thị toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+
+            const icon = document.createElement('span');
+            icon.className = 'toast-icon';
+            icon.textContent = type === 'success' ? '✓' : '✗';
+
+            const text = document.createElement('span');
+            text.textContent = message;
+
+            toast.appendChild(icon);
+            toast.appendChild(text);
+            toastContainer.appendChild(toast);
+
+            // Tự động xóa toast sau 3 giây
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
 
         // --- 1: XỬ LÝ KIỂM TRA ĐỘC GiẢ ---
         checkReaderBtn.addEventListener('click', handleCheckReader);
@@ -349,6 +433,9 @@
                 docErrorDiv.style.display = 'none';
                 documentCodeInput.value = '';
                 documentCodeInput.focus();
+
+                // Hiển thị thông báo thành công
+                showToast(`Đã thêm: \${data.bookName}`);
             } else {
                 docErrorDiv.textContent = data.error;
                 docErrorDiv.style.display = 'block';
@@ -404,11 +491,17 @@
 
         async function handleSubmitSlip() {
             if (borrowCart.length === 0) {
-                alert("Giỏ mượn đang rỗng. Vui lòng thêm tài liệu.");
+                alert("Phiếu mượn đang rỗng. Vui lòng thêm tài liệu.");
                 return;
             }
             if (!currentReaderId) {
                 alert("Chưa xác nhận độc giả. Vui lòng quay lại Bước 1.");
+                return;
+            }
+
+            // Hỏi người dùng có muốn in phiếu mượn không
+            const confirmPrint = confirm("Bạn có chắc chắn muốn in phiếu mượn không?");
+            if (!confirmPrint) {
                 return;
             }
 
@@ -433,9 +526,8 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    alert(`✓ Tạo phiếu mượn #${data.slipId} thành công!\n${data.message}`);
-                    // Có thể mở cửa sổ in phiếu
-                    // window.open(`printSlip.jsp?slipId=${data.slipId}`, '_blank');
+                    alert(`Tạo phiếu mượn thành công!`);
+                    // Mở cửa sổ in phiếu
                     resetForm();
                 } else {
                     alert("✗ Lỗi: " + data.error);

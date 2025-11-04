@@ -5,6 +5,9 @@
  */
 package model;
 
+import java.util.List;
+import java.util.ArrayList;
+
 /**
  *
  * @author ADMIN
@@ -15,8 +18,10 @@ public class Document {
     private String author;
     private String publishedYear;
     private String description;
+    private List<DocumentCopy> copies;
 
     public Document() {
+        this.copies = new ArrayList<>();
     }
 
     public Document(int id, String name, String author, String publishedYear, String description) {
@@ -25,6 +30,7 @@ public class Document {
         this.author = author;
         this.publishedYear = publishedYear;
         this.description = description;
+        this.copies = new ArrayList<>();
     }
 
     public int getId() {
@@ -67,6 +73,14 @@ public class Document {
         this.description = description;
     }
 
+    public List<DocumentCopy> getCopies() {
+        return copies;
+    }
+
+    public void setCopies(List<DocumentCopy> copies) {
+        this.copies = copies;
+    }
+
     @Override
     public String toString() {
         return "Document{" +
@@ -75,6 +89,7 @@ public class Document {
                 ", author='" + author + '\'' +
                 ", publishedYear='" + publishedYear + '\'' +
                 ", description='" + description + '\'' +
+                ", copies=" + (copies != null ? copies.size() : 0) +
                 '}';
     }
 }

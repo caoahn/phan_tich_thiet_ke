@@ -2,6 +2,7 @@ package servlet;
 import dao.MemberDAO;
 import model.Member;
 import model.Reader;
+import model.Librarian;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -73,10 +74,18 @@ public class AuthServlet extends HttpServlet {
 
         MemberDAO dao = new MemberDAO();
         Member member = dao.login(username, password);
+        System.out.println(member);
 
         if(member != null){
             HttpSession session = request.getSession();
             session.setAttribute("member", member);
+
+            // Nếu là librarian, lưu thêm librarianId vào session
+            if(member instanceof Librarian){
+                Librarian librarian = (Librarian) member;
+                session.setAttribute("librarianId", librarian.getId());
+            }
+
             response.sendRedirect("gdMainMenu.jsp");
         }
         else {

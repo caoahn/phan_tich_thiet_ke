@@ -9,7 +9,7 @@ import java.util.List;
 
 public class BorrowSlipDAO extends DAO {
 
-    public BorrowSlip createBorrowSlipWithTransaction(int readerId, List<Integer> documentCopyIds, int librarianId) {
+    public BorrowSlip createBorrowSlip(int readerId, List<Integer> documentCopyIds, int librarianId) {
         BorrowSlip borrowSlip = null;
 
         try {
@@ -42,7 +42,7 @@ public class BorrowSlipDAO extends DAO {
             rs.close();
             psSlip.close();
 
-            System.out.println("✓ BƯỚC A: Tạo phiếu mượn thành công với ID: " + slipId);
+            System.out.println("BƯỚC A: Tạo phiếu mượn thành công với ID: " + slipId);
 
             // Tạo borrow_slip_detail cho từng document_copy
             String sqlDetail = "INSERT INTO borrow_slip_detail (borrowSlipId, documentCopyId, librarianId) " +
@@ -54,7 +54,7 @@ public class BorrowSlipDAO extends DAO {
                 psDetail.setInt(2, copyId);
                 psDetail.setInt(3, librarianId);
                 psDetail.executeUpdate();
-                System.out.println("✓ BƯỚC B: Thêm chi tiết cho document_copy_id = " + copyId);
+                System.out.println("Thêm chi tiết cho document_copy_id = " + copyId);
             }
             psDetail.close();
 

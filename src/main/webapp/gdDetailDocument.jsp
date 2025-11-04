@@ -488,7 +488,7 @@
                                 <td>
                                     <c:choose>
                                         <c:when test="${copy.status == 'available'}">
-                                            <span class="status-badge status-available">✓ Có sẵn</span>
+                                            <span class="status-badge status-available"> Có sẵn</span>
                                         </c:when>
                                         <c:when test="${copy.status == 'borrowed'}">
                                             <span class="status-badge status-borrowed"> Đang mượn</span>

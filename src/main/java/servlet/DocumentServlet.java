@@ -7,7 +7,6 @@ package servlet;
 import dao.DocumentCopyDAO;
 import model.Document;
 import dao.DocumentDAO;
-import model.DocumentCopy;
 
 import java.io.IOException;
 import java.util.List;
@@ -67,15 +66,6 @@ public class DocumentServlet extends HttpServlet {
     }
     
     /**
-     * Xử lý POST request
-     */
-//    @Override
-//    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-//            throws ServletException, IOException {
-//        doGet(request, response);
-//    }
-    
-    /**
      * Tìm kiếm tài liệu
      */
     private void searchDocument(HttpServletRequest request, HttpServletResponse response)
@@ -119,14 +109,11 @@ public class DocumentServlet extends HttpServlet {
         try {
             int documentId = Integer.parseInt(idParam);
 
-            // Lấy thông tin tài liệu
+            // Lấy thông tin tài liệu (đã bao gồm danh sách bản sao)
             Document document = documentDAO.getDetailDocument(documentId);
 
-            // Lấy danh sách bản sao
-            List<DocumentCopy> copies = documentCopyDAO.getDocumentCopies(documentId);
-
             request.setAttribute("document", document);
-            request.setAttribute("copies", copies);
+            request.setAttribute("copies", document.getCopies());
 
             request.getRequestDispatcher("gdDetailDocument.jsp").forward(request, response);
 

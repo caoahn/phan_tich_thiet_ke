@@ -137,20 +137,18 @@ public class BorrowSlipServlet extends HttpServlet {
 
             // Lấy librarianId từ session
             HttpSession session = request.getSession();
-            Integer librarianId = (Integer) session.getAttribute("memberId");
+            Integer librarianId = (Integer) session.getAttribute("librarianId");
 
             // Nếu chưa đăng nhập, dùng giá trị mặc định (tạm thời cho testing)
             if (librarianId == null) {
                 librarianId = 1;
             }
-
-            System.out.println("=== BẮT ĐẦU TẠO PHIẾU MƯỢN ===");
             System.out.println("Reader ID: " + readerId);
             System.out.println("Librarian ID: " + librarianId);
             System.out.println("Document Copy IDs: " + copyIds);
 
             // Gọi DAO để tạo phiếu mượn với transaction
-            BorrowSlip borrowSlip = borrowSlipDAO.createBorrowSlipWithTransaction(
+            BorrowSlip borrowSlip = borrowSlipDAO.createBorrowSlip(
                 readerId,
                 copyIds,
                 librarianId
@@ -163,10 +161,10 @@ public class BorrowSlipServlet extends HttpServlet {
                     "{\"success\": true, \"slipId\": %d, \"message\": \"Tạo phiếu mượn thành công!\"}",
                     borrowSlip.getId()
                 );
-                System.out.println("=== TẠO PHIẾU MƯỢN THÀNH CÔNG ===");
+                System.out.println("TẠO PHIẾU MƯỢN THÀNH CÔNG");
             } else {
                 jsonResponse = "{\"success\": false, \"error\": \"Không thể tạo phiếu mượn. Vui lòng thử lại!\"}";
-                System.err.println("=== TẠO PHIẾU MƯỢN THẤT BẠI ===");
+                System.err.println("TẠO PHIẾU MƯỢN THẤT BẠI");
             }
 
             try (PrintWriter out = response.getWriter()) {

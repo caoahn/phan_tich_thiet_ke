@@ -50,19 +50,41 @@ public class DocumentDAO extends DAO {
     public Document getDetailDocument(int idDocument) {
         Document document = null;
 
-        String sql = "SELECT id, name, author, publishedYear, description FROM document WHERE id = ? ";
+        String sql = "SELECT d.id, d.name, d.author, d.publishedYear, d.description, " +
+                     "dc.id AS copy_id, dc.document_code, dc.status " +
+                     "FROM document d " +
+                     "LEFT JOIN document_copy dc ON d.id = dc.document_id " +
+                     "WHERE d.id = ? " +
+                     "ORDER BY dc.document_code";
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, idDocument);
 
             try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    document = new Document();
-                    document.setId(rs.getInt("id"));
-                    document.setName(rs.getString("name"));
-                    document.setAuthor(rs.getString("author"));
-                    document.setPublishedYear(rs.getString("publishedYear"));
-                    document.setDescription(rs.getString("description"));
+                List<DocumentCopy> copies = new ArrayList<>();
+
+                while (rs.next()) {
+                    // Tạo document object ở lần đầu tiên
+                    if (document == null) {
+                        document = new Document();
+                        document.setId(rs.getInt("id"));
+                        document.setName(rs.getString("name"));
+                        document.setAuthor(rs.getString("author"));
+                        document.setPublishedYear(rs.getString("publishedYear"));
+                        document.setDescription(rs.getString("description"));
+                    }
+                    // Thêm document copy nếu có (kiểm tra copy_id khác null)
+                    if (rs.getObject("copy_id") != null) {
+                        DocumentCopy copy = new DocumentCopy();
+                        copy.setId(rs.getInt("copy_id"));
+                        copy.setDocumentCode(rs.getString("document_code"));
+                        copy.setStatus(rs.getString("status"));
+                        copies.add(copy);
+                    }
+                }
+                // Gán danh sách copies vào document
+                if (document != null) {
+                    document.setCopies(copies);
                 }
             }
 
