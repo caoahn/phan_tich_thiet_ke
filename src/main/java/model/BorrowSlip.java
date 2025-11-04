@@ -6,6 +6,7 @@
 package model;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -17,6 +18,8 @@ public class BorrowSlip {
     private Date returnDate;
     private String status;
     private int readerId;
+    private List<BorrowSlipDetail> details;
+    private Reader reader;
 
     public BorrowSlip() {
     }
@@ -68,6 +71,21 @@ public class BorrowSlip {
     public void setReaderId(int readerId) {
         this.readerId = readerId;
     }
-    
-    
+
+    public List<BorrowSlipDetail> getDetails() {
+        return details;
+    }
+
+    public void setDetails(List<BorrowSlipDetail> details) {
+        this.details = details;
+    }
+
+    public Reader getReader() {
+        return reader;
+    }
+
+    public void setReader(Reader reader) {
+        this.reader = reader;
+    }
+
 }

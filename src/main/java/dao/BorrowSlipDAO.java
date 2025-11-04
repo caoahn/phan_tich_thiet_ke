@@ -1,13 +1,18 @@
 package dao;
 
 import model.BorrowSlip;
+import model.BorrowSlipDetail;
+import model.Reader;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.ArrayList;
 
 public class BorrowSlipDAO extends DAO {
+
+    private static final int BORROW_PERIOD_DAYS = 14;
 
     public BorrowSlip createBorrowSlip(int readerId, List<Integer> documentCopyIds, int librarianId) {
         BorrowSlip borrowSlip = null;
@@ -20,7 +25,7 @@ public class BorrowSlipDAO extends DAO {
 
             // Tạo borrow_slip
             String sqlSlip = "INSERT INTO borrow_slip (borrowDate, returnDate, status, readerId) " +
-                           "VALUES (CURDATE(), DATE_ADD(CURDATE(), INTERVAL 14 DAY), 'borrowing', ?)";
+                           "VALUES (CURDATE(), DATE_ADD(CURDATE(), INTERVAL " + BORROW_PERIOD_DAYS + " DAY), 'borrowing', ?)";
 
             PreparedStatement psSlip = connection.prepareStatement(sqlSlip, Statement.RETURN_GENERATED_KEYS);
             psSlip.setInt(1, readerId);
@@ -71,10 +76,7 @@ public class BorrowSlipDAO extends DAO {
                 System.out.println("✓ BƯỚC C: Cập nhật trạng thái 'borrowed' cho document_copy_id = " + copyId);
             }
             psUpdate.close();
-
-            // COMMIT giao dịch
             connection.commit();
-            System.out.println("COMMIT: Transaction thành công!");
 
             // Tạo đối tượng BorrowSlip để trả về
             borrowSlip = new BorrowSlip();
@@ -86,13 +88,12 @@ public class BorrowSlipDAO extends DAO {
             try {
                 if (connection != null) {
                     connection.rollback();
-                    System.err.println("✗✗✗ ROLLBACK: Giao dịch bị hủy do có lỗi!");
+                    System.err.println("ROLLBACK: Giao dịch bị hủy do có lỗi!");
                 }
             } catch (SQLException rollbackEx) {
                 rollbackEx.printStackTrace();
             }
             e.printStackTrace();
-            System.err.println("Lỗi khi tạo phiếu mượn: " + e.getMessage());
             borrowSlip = null;
 
         } finally {
@@ -106,6 +107,72 @@ public class BorrowSlipDAO extends DAO {
             }
         }
 
+        return borrowSlip;
+    }
+
+    public BorrowSlip getBorrowSlipDetail(int slipId) {
+        BorrowSlip borrowSlip = null;
+
+        try {
+            String sql = "SELECT " +
+                        "bs.id AS slipId, bs.borrowDate, bs.returnDate, bs.status, " +
+                        "r.id AS readerId, r.readerCode, r.username, " +
+                        "m.email, m.phone, " +
+                        "bsd.id AS detailId, bsd.documentCopyId, " +
+                        "d.name AS bookName " +
+                        "FROM borrow_slip bs " +
+                        "JOIN reader r ON bs.readerId = r.id " +
+                        "JOIN member m ON r.username = m.username " +
+                        "LEFT JOIN borrow_slip_detail bsd ON bs.id = bsd.borrowSlipId " +
+                        "LEFT JOIN document_copy dc ON bsd.documentCopyId = dc.id " +
+                        "LEFT JOIN document d ON dc.document_id = d.id " +
+                        "WHERE bs.id = ?";
+
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, slipId);
+            ResultSet rs = ps.executeQuery();
+
+            List<BorrowSlipDetail> details = new ArrayList<>();
+
+            while (rs.next()) {
+                if (borrowSlip == null) {
+                    // Chỉ khởi tạo BorrowSlip 1 lần duy nhất
+                    borrowSlip = new BorrowSlip();
+                    borrowSlip.setId(rs.getInt("slipId"));
+                    borrowSlip.setBorrowDate(rs.getDate("borrowDate"));
+                    borrowSlip.setReturnDate(rs.getDate("returnDate"));
+                    borrowSlip.setStatus(rs.getString("status"));
+
+                    // Tạo Reader object
+                    Reader reader = new Reader();
+                    reader.setId(rs.getInt("readerId"));
+                    reader.setReaderCode(rs.getString("readerCode"));
+                    reader.setUsername(rs.getString("username"));
+                    reader.setEmail(rs.getString("email"));
+                    reader.setPhone(rs.getString("phone"));
+                    borrowSlip.setReader(reader);
+                }
+
+                int detailId = rs.getInt("detailId");
+
+                // kiem tra xem co chi tiet phieu muon khong
+                if (detailId != 0) {
+                    BorrowSlipDetail detail = new BorrowSlipDetail();
+                    detail.setId(detailId);
+                    detail.setDocumentCopyId(rs.getInt("documentCopyId"));
+                    detail.setBookName(rs.getString("bookName"));
+                    details.add(detail);
+                }
+            }
+
+            if (borrowSlip != null) {
+                borrowSlip.setDetails(details);
+            }
+            rs.close();
+            ps.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return borrowSlip;
     }
 }

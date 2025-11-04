@@ -38,8 +38,8 @@ public class BorrowSlipServlet extends HttpServlet {
             case "create":
                 request.getRequestDispatcher("gdCreateBorrowSlip.jsp").forward(request, response);
                 break;
-            case "checkExistDocumentCopy":
-                checkExistDocumentCopy(request, response);
+            case "viewDetail":
+                viewBorrowSlipDetail(request, response);
                 break;
             default:
                 break;
@@ -58,61 +58,6 @@ public class BorrowSlipServlet extends HttpServlet {
             default:
                 break;
         }
-    }
-
-    private void checkExistDocumentCopy(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("application/json;charset=UTF-8");
-        String documentCode = request.getParameter("documentCode");
-
-        DocumentCopy doc = documentCopyDAO.checkDocumentCopyExists(documentCode);
-
-        String json;
-        if (doc != null) {
-            String status = doc.getStatus();
-            boolean isAvailable = status.equalsIgnoreCase("available");
-            String errorMessage = "";
-
-            switch (status.toLowerCase()) {
-                case "borrowed":
-                    errorMessage = String.format("Sách này đã được mượn! (Mã: %s)", doc.getDocumentCode());
-                    break;
-                case "damaged":
-                    errorMessage = String.format("Sách này bị hỏng, không thể mượn. (Mã: %s)", doc.getDocumentCode());
-                    break;
-                case "lost":
-                    errorMessage = String.format("Sách này đã bị báo mất. (Mã: %s)", doc.getDocumentCode());
-                    break;
-                default:
-                    break;
-            }
-            if (isAvailable) {
-                json = String.format(
-                        "{ \"success\": true, \"copyId\": %d, \"copyCode\": \"%s\", \"bookName\": \"%s\", \"status\": \"%s\" }",
-                        doc.getId(),
-                        doc.getDocumentCode(),
-                        doc.getBookName().replace("\"", "\\\""),
-                        doc.getStatus()
-                );
-            } else {
-                json = String.format(
-                        " { \"success\": false, \"error\": \"%s\", \"status\": \"%s\" }",
-                        errorMessage.replace("\"", "\\\""),
-                        doc.getStatus()
-                );
-            }
-        } else {
-            json = String.format(
-                    "{ \"success\": false, \"error\": \"Không tìm thấy bản sao sách này! (Mã: %s)\", \"status\": \"not_found\" }",
-                    documentCode
-            );
-        }
-
-        try (PrintWriter out = response.getWriter()) {
-            out.print(json);
-            out.flush();
-        }
-        System.out.println("Response JSON: " + json);
     }
 
     private void createBorrowSlip(HttpServletRequest request, HttpServletResponse response)
@@ -183,6 +128,30 @@ public class BorrowSlipServlet extends HttpServlet {
                 out.print(jsonResponse);
                 out.flush();
             }
+        }
+    }
+
+    private void viewBorrowSlipDetail(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String slipIdParam = request.getParameter("slipId");
+
+        if (slipIdParam == null || slipIdParam.trim().isEmpty()) {
+            response.sendRedirect("borrowSlip?action=create");
+            return;
+        }
+
+        try {
+            int slipId = Integer.parseInt(slipIdParam);
+            BorrowSlip borrowSlip = borrowSlipDAO.getBorrowSlipDetail(slipId);
+
+            if (borrowSlip != null) {
+                request.setAttribute("borrowSlip", borrowSlip);
+                request.getRequestDispatcher("gdBorrowSlipDetail.jsp").forward(request, response);
+            } else {
+                response.sendRedirect("borrowSlip?action=create&error=notfound");
+            }
+        } catch (NumberFormatException e) {
+            response.sendRedirect("borrowSlip?action=create&error=invalid");
         }
     }
 

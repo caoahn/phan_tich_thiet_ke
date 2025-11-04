@@ -10,6 +10,7 @@ public class BorrowSlipDetail {
     private int borrowSlipId;
     private int documentCopyId;
     private int librarianId;
+    private String bookName;
 
     public BorrowSlipDetail() {
     }
@@ -51,5 +52,13 @@ public class BorrowSlipDetail {
 
     public void setLibrarianId(int librarianId) {
         this.librarianId = librarianId;
+    }
+
+    public String getBookName() {
+        return bookName;
+    }
+
+    public void setBookName(String bookName) {
+        this.bookName = bookName;
     }
 }

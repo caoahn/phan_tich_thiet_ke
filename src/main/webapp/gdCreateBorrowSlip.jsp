@@ -250,7 +250,7 @@
                     <label for="documentCodeInput">Mã Tài Liệu (VD: 'DOC-1-1', 'DOC-1-2')</label>
                     <input type="text" id="documentCodeInput" placeholder="Quét mã vạch sách hoặc nhập thủ công...">
                 </div>
-                <button id="addDocBtn" class="btn btn-primary">+ Thêm vào giỏ</button>
+                <button id="addDocBtn" class="btn btn-primary">Thêm</button>
                 <div id="docError" style="display:none;"></div>
             </div>
         </fieldset>
@@ -274,7 +274,7 @@
         </table>
 
         <div class="submit-container">
-            <button id="submitSlipBtn" class="btn btn-primary" disabled>In Phiếu</button>
+            <button id="submitSlipBtn" class="btn btn-primary" disabled>Tạo phiếu mượn</button>
         </div>
     </div>
 </div>
@@ -418,7 +418,7 @@
                 return;
             }
 
-            const url = `borrowSlip?action=checkExistDocumentCopy&documentCode=\${encodeURIComponent(docCode)}`;
+            const url = `documentCopy?action=checkExistDocumentCopy&documentCode=\${encodeURIComponent(docCode)}`;
             const response = await fetch(url);
             const data = await response.json();
 
@@ -500,7 +500,7 @@
             }
 
             // Hỏi người dùng có muốn in phiếu mượn không
-            const confirmPrint = confirm("Bạn có chắc chắn muốn in phiếu mượn không?");
+            const confirmPrint = confirm("Bạn có chắc chắn muốn tạo phiếu mượn không?");
             if (!confirmPrint) {
                 return;
             }
@@ -511,7 +511,9 @@
             try {
                 submitSlipBtn.disabled = true;
                 submitSlipBtn.textContent = 'Đang xử lý...';
-                console.log(currentReaderId)
+                console.log('Current Reader ID:', currentReaderId);
+                console.log('Copy IDs:', copyIds);
+
                 const response = await fetch('borrowSlip?action=createBorrowSlip', {
                     method: 'POST',
                     headers: {
@@ -526,10 +528,12 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    alert(`Tạo phiếu mượn thành công!`);
-                    // Mở cửa sổ in phiếu
-                    resetForm();
+                    if(confirm("Tạo phiếu mượn thành công! Bạn có muốn in phiếu mượn không?")) {
+                        const redirectUrl = `borrowSlip?action=viewDetail&slipId=\${data.slipId}`;
+                        window.location.href = redirectUrl;
+                    }
                 } else {
+                    console.error('Failed:', data.error);
                     alert("✗ Lỗi: " + data.error);
                     submitSlipBtn.disabled = false;
                     submitSlipBtn.textContent = 'In Phiếu';
