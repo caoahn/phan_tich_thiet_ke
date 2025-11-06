@@ -1,10 +1,7 @@
 package servlet;
 
-import dao.DocumentCopyDAO;
 import dao.BorrowSlipDAO;
-import model.DocumentCopy;
 import model.BorrowSlip;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -19,12 +16,10 @@ import java.util.List;
 
 @WebServlet(name = "BorrowSlipServlet", urlPatterns = {"/borrowSlip"})
 public class BorrowSlipServlet extends HttpServlet {
-    private DocumentCopyDAO documentCopyDAO;
     private BorrowSlipDAO borrowSlipDAO;
 
     @Override
     public void init() throws ServletException {
-        this.documentCopyDAO = new DocumentCopyDAO();
         this.borrowSlipDAO = new BorrowSlipDAO();
     }
 
@@ -36,6 +31,10 @@ public class BorrowSlipServlet extends HttpServlet {
 
         switch (action){
             case "create":
+                HttpSession session = request.getSession(false);
+                if (session != null && session.getAttribute("currentReader") != null) {
+                    session.removeAttribute("currentReader");
+                }
                 request.getRequestDispatcher("gdCreateBorrowSlip.jsp").forward(request, response);
                 break;
             case "viewDetail":
@@ -62,23 +61,23 @@ public class BorrowSlipServlet extends HttpServlet {
 
     private void createBorrowSlip(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("application/json;charset=UTF-8");
 
         try {
-            // Đọc JSON từ request body
-            StringBuilder sb = new StringBuilder();
-            BufferedReader reader = request.getReader();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                sb.append(line);
+            // Lấy dữ liệu từ form parameters
+            String readerIdStr = request.getParameter("readerId");
+            String copyIdsJson = request.getParameter("copyIds");
+
+            int readerId = Integer.parseInt(readerIdStr);
+
+            // Parse JSON array của copyIds - format: [1,2,3]
+            List<Integer> copyIds = new ArrayList<>();
+            String arrayContent = copyIdsJson.replaceAll("[\\[\\]\\s]", ""); // Bỏ [ ] và khoảng trắng
+            if (!arrayContent.isEmpty()) {
+                String[] items = arrayContent.split(",");
+                for (String item : items) {
+                    copyIds.add(Integer.parseInt(item.trim()));
+                }
             }
-
-            String jsonString = sb.toString();
-            System.out.println("Received JSON: " + jsonString);
-
-            // Parse JSON thủ công (không dùng thư viện)
-            int readerId = parseIntFromJson(jsonString, "readerId");
-            List<Integer> copyIds = parseArrayFromJson(jsonString, "copyIds");
 
             // Lấy librarianId từ session
             HttpSession session = request.getSession();
@@ -88,9 +87,6 @@ public class BorrowSlipServlet extends HttpServlet {
             if (librarianId == null) {
                 librarianId = 1;
             }
-            System.out.println("Reader ID: " + readerId);
-            System.out.println("Librarian ID: " + librarianId);
-            System.out.println("Document Copy IDs: " + copyIds);
 
             // Gọi DAO để tạo phiếu mượn với transaction
             BorrowSlip borrowSlip = borrowSlipDAO.createBorrowSlip(
@@ -99,35 +95,24 @@ public class BorrowSlipServlet extends HttpServlet {
                 librarianId
             );
 
-            String jsonResponse;
-
             if (borrowSlip != null) {
-                jsonResponse = String.format(
-                    "{\"success\": true, \"slipId\": %d, \"message\": \"Tạo phiếu mượn thành công!\"}",
-                    borrowSlip.getId()
-                );
-                System.out.println("TẠO PHIẾU MƯỢN THÀNH CÔNG");
-            } else {
-                jsonResponse = "{\"success\": false, \"error\": \"Không thể tạo phiếu mượn. Vui lòng thử lại!\"}";
-                System.err.println("TẠO PHIẾU MƯỢN THẤT BẠI");
-            }
+                // Xóa session reader
+                session.removeAttribute("currentReader");
 
-            try (PrintWriter out = response.getWriter()) {
-                out.print(jsonResponse);
-                out.flush();
+                // Set attributes để hiển thị thông báo thành công
+                request.setAttribute("createSuccess", true);
+                request.setAttribute("borrowSlip", borrowSlip);
+                request.setAttribute("message", "Tạo phiếu mượn thành công!");
+
+                // Forward về trang tạo phiếu mượn với thông báo
+                request.getRequestDispatcher("gdCreateBorrowSlip.jsp").forward(request, response);
+            } else {
+                response.sendRedirect("borrowSlip?action=create&error=Không thể tạo phiếu mượn");
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            String jsonResponse = String.format(
-                "{\"success\": false, \"error\": \"Lỗi hệ thống: %s\"}",
-                e.getMessage().replace("\"", "\\\"")
-            );
-
-            try (PrintWriter out = response.getWriter()) {
-                out.print(jsonResponse);
-                out.flush();
-            }
+            response.sendRedirect("borrowSlip?action=create&error=" + e.getMessage());
         }
     }
 
@@ -153,37 +138,5 @@ public class BorrowSlipServlet extends HttpServlet {
         } catch (NumberFormatException e) {
             response.sendRedirect("borrowSlip?action=create&error=invalid");
         }
-    }
-
-    // Hàm parse JSON thủ công
-    private int parseIntFromJson(String json, String key) {
-        String pattern = "\"" + key + "\"\\s*:\\s*\"?(\\d+)\"?";
-        java.util.regex.Pattern p = java.util.regex.Pattern.compile(pattern);
-        java.util.regex.Matcher m = p.matcher(json);
-        if (m.find()) {
-            return Integer.parseInt(m.group(1));
-        }
-        return 0;
-    }
-
-    // Parse array dạng [1, 2, 3] hoặc ["1", "2"]
-    private List<Integer> parseArrayFromJson(String json, String key) {
-        List<Integer> result = new ArrayList<>();
-        String pattern = "\"" + key + "\"\\s*:\\s*\\[([^\\]]*)\\]";
-        java.util.regex.Pattern p = java.util.regex.Pattern.compile(pattern);
-        java.util.regex.Matcher m = p.matcher(json);
-        if (m.find()) {
-            String arrayContent = m.group(1).trim();
-            if (!arrayContent.isEmpty()) {
-                String[] items = arrayContent.split(",");
-                for (String item : items) {
-                    item = item.trim().replaceAll("\"", ""); // bỏ dấu ngoặc kép nếu có
-                    if (!item.isEmpty()) {
-                        result.add(Integer.parseInt(item));
-                    }
-                }
-            }
-        }
-        return result;
     }
 }

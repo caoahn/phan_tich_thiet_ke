@@ -338,7 +338,7 @@
 
         <!-- Danh sách tài liệu mượn -->
         <div class="section">
-            <h2>Danh sách tài liệu mượn</h2>
+            <h2>Danh sách tài liệu mượn (Số lượng: <%= borrowSlip.getDetails() != null ? borrowSlip.getDetails().size() : 0 %>)</h2>
             <table>
                 <thead>
                     <tr>

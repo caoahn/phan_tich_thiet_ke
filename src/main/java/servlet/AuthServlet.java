@@ -3,7 +3,6 @@ import dao.MemberDAO;
 import model.Member;
 import model.Reader;
 import model.Librarian;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -30,12 +29,11 @@ public class AuthServlet extends HttpServlet {
                 // Handle logout action
                 HttpSession session = request.getSession(false);
                 if (session != null) {
-                    session.invalidate(); // hủy toàn bộ session
+                    session.invalidate();
                 }
                 request.getRequestDispatcher("gdLogin.jsp").forward(request, response);
                 break;
             case "register":
-                // Handle register action
                 request.getRequestDispatcher("gdRegister.jsp").forward(request, response);
                 break;
             default:
@@ -80,7 +78,6 @@ public class AuthServlet extends HttpServlet {
             HttpSession session = request.getSession();
             session.setAttribute("member", member);
 
-            // Nếu là librarian, lưu thêm librarianId vào session
             if(member instanceof Librarian){
                 Librarian librarian = (Librarian) member;
                 session.setAttribute("librarianId", librarian.getId());
@@ -96,11 +93,10 @@ public class AuthServlet extends HttpServlet {
 
     private void register(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException {
-        // Implement registration logic here
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         String email = request.getParameter("email");
-        String role = "reader"; // Default role
+        String role = "reader";
 
         Reader newMember = new Reader(
             username,

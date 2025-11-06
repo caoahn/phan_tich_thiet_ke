@@ -1,12 +1,12 @@
 package servlet;
 import dao.ReaderDAO;
 import model.Reader;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 @WebServlet(name = "ReaderServlet", urlPatterns = {"/reader"})
@@ -30,28 +30,22 @@ public class ReaderServlet extends HttpServlet {
 
     private void checkReader(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException{
+        request.setCharacterEncoding("UTF-8");
         String readerCode = request.getParameter("readerCode");
 
         Reader reader = readerDAO.checkReaderExists(readerCode);
 
-        String json = "";
         if (reader != null) {
-            json = String.format(
-                    "{\"success\": true,\"readerId\": \"%s\", \"readerCode\": \"%s\", \"username\": \"%s\", \"email\": \"%s\", \"phone\": \"%s\"}",
-                    reader.getId(),
-                    reader.getReaderCode(),
-                    reader.getUsername(),
-                    reader.getEmail(),
-                    reader.getPhone()
-            );
-            System.out.println(json);
+            // Lưu reader vào session để giữ trạng thái
+            HttpSession session = request.getSession();
+            session.setAttribute("currentReader", reader);
+            request.setAttribute("success", true);
         } else {
-            json = "{\"success\": false , \"message\": \"Reader not found.\"}";
-            System.out.println(json);
+            request.setAttribute("success", false);
+            request.setAttribute("errorMessage", "Không tìm thấy độc giả với mã: " + readerCode);
         }
 
-        response.getWriter().write(json);
-
+        // Forward về lại trang tạo phiếu mượn
+        request.getRequestDispatcher("gdCreateBorrowSlip.jsp").forward(request, response);
     }
 }
-

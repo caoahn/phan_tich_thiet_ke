@@ -284,7 +284,7 @@
         </a>
 
         <!-- Mượn tài liệu -->
-        <a href="borrowSlip?action=create" class="menu-item">
+        <a href="borrowSlip?action=create" class="menu-item" onclick="clearSessionData()">
             <div class="title">Mượn Tài liệu</div>
             <div class="description">Đăng ký mượn tài liệu trực tuyến</div>
         </a>
@@ -296,6 +296,10 @@
     <% if(request.getParameter("message") != null) { %>
     alert('<%= request.getParameter("message") %>');
     <% } %>
+
+    function clearSessionData() {
+        sessionStorage.removeItem('borrowCart');
+    }
 </script>
 </body>
 </html>

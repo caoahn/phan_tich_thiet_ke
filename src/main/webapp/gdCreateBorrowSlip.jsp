@@ -1,4 +1,5 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -228,30 +229,74 @@
         </a>
     </h1>
 
-    <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
-
     <div class="top-row-grid">
         <div class="section">
             <h3>1. Thông tin Độc giả</h3>
-            <div class="form-group">
-                <label for="readerCodeInput">Mã Độc Giả (VD: 'DGR_12345')</label>
-                <input type="text" id="readerCodeInput" placeholder="Quét mã thẻ độc giả hoặc nhập thủ công...">
-            </div>
-            <button id="checkReaderBtn" class="btn btn-primary">Kiểm tra</button>
-            <div id="readerError" style="display:none;"></div>
-            <div id="readerInfo" style="display:none;"></div>
+            <form id="readerForm" action="reader" method="GET">
+                <input type="hidden" name="action" value="checkReader">
+                <div class="form-group">
+                    <label for="readerCodeInput">Mã Độc Giả (VD: 'DGR_12345')</label>
+                    <input type="text" id="readerCodeInput" name="readerCode"
+                           value="${sessionScope.currentReader != null ? sessionScope.currentReader.readerCode : (param.action == 'checkReader' ? param.readerCode : '')}"
+                           placeholder="Quét mã thẻ độc giả hoặc nhập thủ công...">
+                </div>
+                <button type="submit" id="checkReaderBtn" class="btn btn-primary">
+                    ${sessionScope.currentReader != null ? 'Kiểm tra lại' : 'Kiểm tra'}
+                </button>
+            </form>
+
+            <c:if test="${param.action == 'checkReader' && success == false}">
+                <div id="readerError" style="display:block;">${errorMessage}</div>
+            </c:if>
+
+            <c:if test="${sessionScope.currentReader != null}">
+                <div id="readerInfo" style="display:block;">
+                    <div class="reader-info-grid">
+                        <strong>Mã Độc Giả:</strong>
+                        <span>${sessionScope.currentReader.readerCode}</span>
+
+                        <strong>Tên tài khoản:</strong>
+                        <span>${sessionScope.currentReader.username}</span>
+
+                        <strong>Email:</strong>
+                        <span>${sessionScope.currentReader.email}</span>
+
+                        <strong>Điện thoại:</strong>
+                        <span>${sessionScope.currentReader.phone}</span>
+                    </div>
+                </div>
+            </c:if>
+
+            <c:if test="${param.action != 'checkReader' || success != false}">
+                <div id="readerError" style="display:none;"></div>
+            </c:if>
+            <c:if test="${sessionScope.currentReader == null}">
+                <div id="readerInfo" style="display:none;"></div>
+            </c:if>
         </div>
 
-        <fieldset id="doc-fieldset" disabled>
+        <fieldset id="doc-fieldset" ${sessionScope.currentReader != null ? '' : 'disabled'}>
             <div class="section">
                 <h3>2. Thêm Tài Liệu</h3>
-                <div class="form-group">
-                    <label for="documentCodeInput">Mã Tài Liệu (VD: 'DOC-1-1', 'DOC-1-2')</label>
-                    <input type="text" id="documentCodeInput" placeholder="Quét mã vạch sách hoặc nhập thủ công...">
-                </div>
-                <button id="addDocBtn" class="btn btn-primary">Thêm</button>
-                <div id="docError" style="display:none;"></div>
+                <form id="documentForm" action="documentCopy" method="GET">
+                    <input type="hidden" name="action" value="checkExistDocumentCopy">
+
+                    <div class="form-group">
+                        <label for="documentCodeInput">Mã Tài Liệu (VD: 'DOC-1-1', 'DOC-1-2')</label>
+                        <input type="text" id="documentCodeInput" name="documentCode"
+                               placeholder="Quét mã vạch sách hoặc nhập thủ công...">
+                    </div>
+                    <button type="submit" id="addDocBtn" class="btn btn-primary">Thêm</button>
+                </form>
+
+                <c:if test="${param.action == 'checkExistDocumentCopy' && success == false}">
+                    <div id="docError" style="display:block;">${errorMessage}</div>
+                </c:if>
+
+                <c:if test="${param.action != 'checkExistDocumentCopy' || success != false}">
+                    <div id="docError" style="display:none;"></div>
+                </c:if>
             </div>
         </fieldset>
     </div>
@@ -274,14 +319,21 @@
         </table>
 
         <div class="submit-container">
-            <button id="submitSlipBtn" class="btn btn-primary" disabled>Tạo phiếu mượn</button>
+            <button id="submitSlipBtn" class="btn btn-primary" ${sessionScope.currentReader != null ? '' : 'disabled'}>Tạo phiếu mượn</button>
         </div>
     </div>
+
+    <!-- Hidden form for submitting borrow slip -->
+    <form id="submitSlipForm" action="borrowSlip" method="POST" style="display: none;">
+        <input type="hidden" name="action" value="createBorrowSlip">
+        <input type="hidden" name="readerId" id="hiddenReaderId">
+        <input type="hidden" name="copyIds" id="hiddenCopyIds">
+    </form>
 </div>
 
 <script>
     // Khai báo các biến global
-    let currentReaderId = null;
+    let currentReaderId = ${sessionScope.currentReader != null ? sessionScope.currentReader.id : 'null'};
     let borrowCart = [];
 
     // LOGIC CỦA GIAO DIỆN ---
@@ -289,127 +341,63 @@
 
         // Lấy các phần tử DOM
         const readerCodeInput = document.getElementById('readerCodeInput');
-
-        const checkReaderBtn = document.getElementById('checkReaderBtn');
-        const readerInfoDiv = document.getElementById('readerInfo');
-        const readerErrorDiv = document.getElementById('readerError');
+        const readerForm = document.getElementById('readerForm');
         const docFieldset = document.getElementById('doc-fieldset');
         const documentCodeInput = document.getElementById('documentCodeInput');
+        const documentForm = document.getElementById('documentForm');
         const addDocBtn = document.getElementById('addDocBtn');
         const docErrorDiv = document.getElementById('docError');
         const cartBody = document.getElementById('cartBody');
         const submitSlipBtn = document.getElementById('submitSlipBtn');
         const toastContainer = document.getElementById('toastContainer');
+        const submitSlipForm = document.getElementById('submitSlipForm');
+        const hiddenReaderId = document.getElementById('hiddenReaderId');
+        const hiddenCopyIds = document.getElementById('hiddenCopyIds');
 
-        // Hàm hiển thị toast notification
+        const savedCart = sessionStorage.getItem('borrowCart');
+        if (savedCart) {
+            borrowCart = JSON.parse(savedCart);
+            updateCartTable();
+        }
+
         function showToast(message, type = 'success') {
             const toast = document.createElement('div');
-            toast.className = `toast toast-${type}`;
-
-            const icon = document.createElement('span');
-            icon.className = 'toast-icon';
-            icon.textContent = type === 'success' ? '✓' : '✗';
-
+            toast.className = `toast toast-\${type}`;
             const text = document.createElement('span');
             text.textContent = message;
-
-            toast.appendChild(icon);
             toast.appendChild(text);
             toastContainer.appendChild(toast);
-
-            // Tự động xóa toast sau 3 giây
             setTimeout(() => {
                 toast.remove();
             }, 3000);
         }
 
-        // --- 1: XỬ LÝ KIỂM TRA ĐỘC GiẢ ---
-        checkReaderBtn.addEventListener('click', handleCheckReader);
         readerCodeInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') handleCheckReader();
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                readerForm.submit();
+            }
         });
 
-        async function handleCheckReader() {
-            const readerCode = readerCodeInput.value;
-            console.log(readerCode)
-            if (!readerCode) return;
-
-            const url = `reader?action=checkReader&readerCode=\${encodeURIComponent(readerCode)}`;
-            const response = await fetch(url);
-            const data = await response.json();
-
-            if (data.success) {
-                currentReaderId = data.readerId;
-
-                readerInfoDiv.innerHTML = '';
-
-                const infoGrid = document.createElement('div');
-                infoGrid.className = 'reader-info-grid';
-
-                // Mã độc giả
-                const lblCode = document.createElement('strong');
-                lblCode.textContent = 'Mã Độc Giả:';
-                const valCode = document.createElement('span');
-                valCode.textContent = data.readerCode;
-
-                // Tên tài khoản
-                const lblUsername = document.createElement('strong');
-                lblUsername.textContent = 'Tên tài khoản:';
-                const valUsername = document.createElement('span');
-                valUsername.textContent = data.username;
-
-                // Email
-                const lblEmail = document.createElement('strong');
-                lblEmail.textContent = 'Email:';
-                const valEmail = document.createElement('span');
-                valEmail.textContent = data.email;
-
-                // Điện thoại
-                const lblPhone = document.createElement('strong');
-                lblPhone.textContent = 'Điện thoại:';
-                const valPhone = document.createElement('span');
-                valPhone.textContent = data.phone;
-
-                // Thêm tất cả vào grid
-                infoGrid.appendChild(lblCode);
-                infoGrid.appendChild(valCode);
-                infoGrid.appendChild(lblUsername);
-                infoGrid.appendChild(valUsername);
-                infoGrid.appendChild(lblEmail);
-                infoGrid.appendChild(valEmail);
-                infoGrid.appendChild(lblPhone);
-                infoGrid.appendChild(valPhone);
-
-                readerInfoDiv.appendChild(infoGrid);
-                readerInfoDiv.style.display = 'block';
-                readerErrorDiv.style.display = 'none';
-
-                // Kích hoạt bước 2 và 3
-                docFieldset.disabled = false;
-                submitSlipBtn.disabled = false;
-                documentCodeInput.focus();
-            } else {
-                currentReaderId = null;
-                readerInfoDiv.style.display = 'none';
-                readerErrorDiv.textContent = data.message;
-                readerErrorDiv.style.display = 'block';
-
-                // Vô hiệu hóa bước 2 và 3
-                docFieldset.disabled = true;
-                submitSlipBtn.disabled = true;
-            }
+        if (currentReaderId) {
+            documentCodeInput.focus();
         }
 
-        // --- 2: XỬ LÝ THÊM TÀI LIỆU ---
-        addDocBtn.addEventListener('click', handleAddDocument);
         documentCodeInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') handleAddDocument();
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleAddDocument();
+            }
         });
 
-        async function handleAddDocument() {
-            const docCode = documentCodeInput.value;
-            if (!docCode) return;
+        documentForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            handleAddDocument();
+        });
 
+        function handleAddDocument() {
+            const docCode = documentCodeInput.value.trim();
+            if (!docCode) return;
             // Kiểm tra trùng lặp trong giỏ
             if (borrowCart.find(item => item.copyCode.toUpperCase() === docCode.toUpperCase())) {
                 docErrorDiv.textContent = "Tài liệu này đã có trong giỏ!";
@@ -418,29 +406,30 @@
                 return;
             }
 
-            const url = `documentCopy?action=checkExistDocumentCopy&documentCode=\${encodeURIComponent(docCode)}`;
-            const response = await fetch(url);
-            const data = await response.json();
-
-            if (data.success && data.status === 'available') {
-                borrowCart.push({
-                    copyId: data.copyId,
-                    copyCode: data.copyCode,
-                    bookName: data.bookName
-                });
-
-                updateCartTable();
-                docErrorDiv.style.display = 'none';
-                documentCodeInput.value = '';
-                documentCodeInput.focus();
-
-                // Hiển thị thông báo thành công
-                showToast(`Đã thêm: \${data.bookName}`);
-            } else {
-                docErrorDiv.textContent = data.error;
-                docErrorDiv.style.display = 'block';
-            }
+            // Lưu giỏ hàng và submit form
+            sessionStorage.setItem('borrowCart', JSON.stringify(borrowCart));
+            documentForm.submit();
         }
+
+        // Xử lý khi thêm tài liệu thành công từ server
+        <c:if test="${param.action == 'checkExistDocumentCopy' && success == true && documentCopy != null}">
+            // Thêm vào giỏ hàng
+            const newItem = {
+                copyId: ${documentCopy.id},
+                copyCode: "${documentCopy.documentCode}",
+                bookName: "${documentCopy.bookName}".replace(/&#034;/g, '"')
+            };
+
+            borrowCart.push(newItem);
+            sessionStorage.setItem('borrowCart', JSON.stringify(borrowCart));
+            updateCartTable();
+
+            // Hiển thị thông báo thành công
+            showToast("Đã thêm: " + newItem.bookName);
+
+            // Focus lại vào ô nhập
+            documentCodeInput.focus();
+        </c:if>
 
         // --- CÁC HÀM TIỆN ÍCH ---
         function updateCartTable() {
@@ -468,6 +457,7 @@
                 removeBtn.className = 'btn btn-danger remove-btn';
                 removeBtn.setAttribute('data-index', index);
                 removeBtn.textContent = 'Xóa';
+                removeBtn.type = 'button';
 
                 actionCell.appendChild(removeBtn);
 
@@ -483,13 +473,12 @@
             if (e.target.classList.contains('remove-btn')) {
                 const indexToRemove = parseInt(e.target.dataset.index, 10);
                 borrowCart.splice(indexToRemove, 1);
+                sessionStorage.setItem('borrowCart', JSON.stringify(borrowCart));
                 updateCartTable();
             }
         });
 
-        submitSlipBtn.addEventListener('click', handleSubmitSlip);
-
-        async function handleSubmitSlip() {
+        submitSlipBtn.addEventListener('click', () => {
             if (borrowCart.length === 0) {
                 alert("Phiếu mượn đang rỗng. Vui lòng thêm tài liệu.");
                 return;
@@ -499,66 +488,21 @@
                 return;
             }
 
-            // Hỏi người dùng có muốn in phiếu mượn không
-            const confirmPrint = confirm("Bạn có chắc chắn muốn tạo phiếu mượn không?");
-            if (!confirmPrint) {
-                return;
+            const confirmCreate = confirm("Bạn có chắc chắn muốn tạo phiếu mượn không?");
+            if (confirmCreate) {
+                // Điền thông tin vào form ẩn
+                hiddenReaderId.value = currentReaderId;
+                hiddenCopyIds.value = JSON.stringify(borrowCart.map(item => item.copyId));
+                submitSlipForm.submit();
             }
+        });
 
-            const copyIds = borrowCart.map(item => item.copyId);
-
-            // Gửi request tạo phiếu mượn với Transaction
-            try {
-                submitSlipBtn.disabled = true;
-                submitSlipBtn.textContent = 'Đang xử lý...';
-                console.log('Current Reader ID:', currentReaderId);
-                console.log('Copy IDs:', copyIds);
-
-                const response = await fetch('borrowSlip?action=createBorrowSlip', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json;charset=UTF-8'
-                    },
-                    body: JSON.stringify({
-                        readerId: currentReaderId,
-                        copyIds: copyIds
-                    })
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    if(confirm("Tạo phiếu mượn thành công! Bạn có muốn in phiếu mượn không?")) {
-                        const redirectUrl = `borrowSlip?action=viewDetail&slipId=\${data.slipId}`;
-                        window.location.href = redirectUrl;
-                    }
-                } else {
-                    console.error('Failed:', data.error);
-                    alert("✗ Lỗi: " + data.error);
-                    submitSlipBtn.disabled = false;
-                    submitSlipBtn.textContent = 'In Phiếu';
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert("✗ Lỗi kết nối: " + error.message);
-                submitSlipBtn.disabled = false;
-                submitSlipBtn.textContent = 'In Phiếu';
-            }
-        }
-
-        function resetForm() {
-            currentReaderId = null;
-            borrowCart = [];
-            updateCartTable();
-            readerCodeInput.value = '';
-            readerInfoDiv.style.display = 'none';
-            readerErrorDiv.style.display = 'none';
-            documentCodeInput.value = '';
-            docErrorDiv.style.display = 'none';
-            docFieldset.disabled = true;
-            submitSlipBtn.disabled = true;
-            submitSlipBtn.textContent = 'In Phiếu';
-        }
+        // Xử lý khi tạo phiếu mượn thành công
+        <c:if test="${createSuccess == true && borrowSlip != null}">
+            sessionStorage.removeItem('borrowCart');
+            alert("${message}");
+            window.location.href = "borrowSlip?action=viewDetail&slipId=${borrowSlip.id}";
+        </c:if>
     });
 </script>
 </body>
