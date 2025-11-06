@@ -66,6 +66,8 @@ public class BorrowSlipServlet extends HttpServlet {
             // Lấy dữ liệu từ form parameters
             String readerIdStr = request.getParameter("readerId");
             String copyIdsJson = request.getParameter("copyIds");
+            String borrowDateStr = request.getParameter("borrowDate");
+            String returnDateStr = request.getParameter("returnDate");
 
             int readerId = Integer.parseInt(readerIdStr);
 
@@ -88,11 +90,13 @@ public class BorrowSlipServlet extends HttpServlet {
                 librarianId = 1;
             }
 
-            // Gọi DAO để tạo phiếu mượn với transaction
+            // Gọi DAO để tạo phiếu mượn với transaction (truyền thêm borrowDate và returnDate)
             BorrowSlip borrowSlip = borrowSlipDAO.createBorrowSlip(
                 readerId,
                 copyIds,
-                librarianId
+                librarianId,
+                borrowDateStr,
+                returnDateStr
             );
 
             if (borrowSlip != null) {

@@ -303,6 +303,17 @@
 
     <div class="section">
         <h3>3. Danh sách tài liệu mượn</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+            <div class="form-group">
+                <label for="borrowDateInput">Ngày mượn</label>
+                <input type="date" id="borrowDateInput" name="borrowDate" required>
+            </div>
+            <div class="form-group">
+                <label for="returnDateInput">Ngày trả dự kiến</label>
+                <input type="date" id="returnDateInput" name="returnDate" required>
+            </div>
+        </div>
+
         <table>
             <thead>
             <tr>
@@ -328,6 +339,8 @@
         <input type="hidden" name="action" value="createBorrowSlip">
         <input type="hidden" name="readerId" id="hiddenReaderId">
         <input type="hidden" name="copyIds" id="hiddenCopyIds">
+        <input type="hidden" name="borrowDate" id="hiddenBorrowDate">
+        <input type="hidden" name="returnDate" id="hiddenReturnDate">
     </form>
 </div>
 
@@ -353,6 +366,18 @@
         const submitSlipForm = document.getElementById('submitSlipForm');
         const hiddenReaderId = document.getElementById('hiddenReaderId');
         const hiddenCopyIds = document.getElementById('hiddenCopyIds');
+        const borrowDateInput = document.getElementById('borrowDateInput');
+        const returnDateInput = document.getElementById('returnDateInput');
+        const hiddenBorrowDate = document.getElementById('hiddenBorrowDate');
+        const hiddenReturnDate = document.getElementById('hiddenReturnDate');
+
+        // Set giá trị mặc định cho ngày mượn (hôm nay) và ngày trả (14 ngày sau)
+        const today = new Date();
+        const returnDate = new Date();
+        returnDate.setDate(today.getDate() + 14);
+
+        borrowDateInput.value = today.toISOString().split('T')[0];
+        returnDateInput.value = returnDate.toISOString().split('T')[0];
 
         const savedCart = sessionStorage.getItem('borrowCart');
         if (savedCart) {
@@ -488,11 +513,23 @@
                 return;
             }
 
+            if (!borrowDateInput.value || !returnDateInput.value) {
+                alert("Vui lòng nhập đầy đủ ngày mượn và ngày trả!");
+                return;
+            }
+
+            if (new Date(returnDateInput.value) <= new Date(borrowDateInput.value)) {
+                alert("Ngày trả phải sau ngày mượn!");
+                return;
+            }
+
             const confirmCreate = confirm("Bạn có chắc chắn muốn tạo phiếu mượn không?");
             if (confirmCreate) {
                 // Điền thông tin vào form ẩn
                 hiddenReaderId.value = currentReaderId;
                 hiddenCopyIds.value = JSON.stringify(borrowCart.map(item => item.copyId));
+                hiddenBorrowDate.value = borrowDateInput.value;
+                hiddenReturnDate.value = returnDateInput.value;
                 submitSlipForm.submit();
             }
         });

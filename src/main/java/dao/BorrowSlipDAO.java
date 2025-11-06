@@ -7,28 +7,27 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.SQLException;
+import java.sql.Date;
 import java.util.List;
 import java.util.ArrayList;
 
 public class BorrowSlipDAO extends DAO {
-
-    private static final int BORROW_PERIOD_DAYS = 14;
-
-    public BorrowSlip createBorrowSlip(int readerId, List<Integer> documentCopyIds, int librarianId) {
+    public BorrowSlip createBorrowSlip(int readerId, List<Integer> documentCopyIds, int librarianId,
+                                       String borrowDateStr, String returnDateStr) {
         BorrowSlip borrowSlip = null;
 
         try {
             // Bắt đầu transaction
             connection.setAutoCommit(false);
-
             System.out.println("readerId: " + readerId);
 
-            // Tạo borrow_slip
-            String sqlSlip = "INSERT INTO borrow_slip (borrowDate, returnDate, status, readerId) " +
-                           "VALUES (CURDATE(), DATE_ADD(CURDATE(), INTERVAL " + BORROW_PERIOD_DAYS + " DAY), 'borrowing', ?)";
+            // Tạo borrow_slip với ngày mượn và ngày trả từ input
+            String sqlSlip = "INSERT INTO borrow_slip (borrowDate, returnDate, status, readerId) VALUES (?, ?, 'borrowing', ?)";
 
             PreparedStatement psSlip = connection.prepareStatement(sqlSlip, Statement.RETURN_GENERATED_KEYS);
-            psSlip.setInt(1, readerId);
+            psSlip.setDate(1, Date.valueOf(borrowDateStr));
+            psSlip.setDate(2, Date.valueOf(returnDateStr));
+            psSlip.setInt(3, readerId);
 
             int rowsAffected = psSlip.executeUpdate();
 
@@ -47,11 +46,10 @@ public class BorrowSlipDAO extends DAO {
             rs.close();
             psSlip.close();
 
-            System.out.println("BƯỚC A: Tạo phiếu mượn thành công với ID: " + slipId);
+            System.out.println("✓ Tạo phiếu mượn thành công với ID: " + slipId);
 
             // Tạo borrow_slip_detail cho từng document_copy
-            String sqlDetail = "INSERT INTO borrow_slip_detail (borrowSlipId, documentCopyId, librarianId) " +
-                             "VALUES ( ?, ?, ?)";
+            String sqlDetail = "INSERT INTO borrow_slip_detail (borrowSlipId, documentCopyId, librarianId) VALUES (?, ?, ?)";
             PreparedStatement psDetail = connection.prepareStatement(sqlDetail);
 
             for (Integer copyId : documentCopyIds) {
@@ -59,7 +57,7 @@ public class BorrowSlipDAO extends DAO {
                 psDetail.setInt(2, copyId);
                 psDetail.setInt(3, librarianId);
                 psDetail.executeUpdate();
-                System.out.println("Thêm chi tiết cho document_copy_id = " + copyId);
+                System.out.println("✓ Thêm chi tiết cho document_copy_id = " + copyId);
             }
             psDetail.close();
 
@@ -73,22 +71,25 @@ public class BorrowSlipDAO extends DAO {
                 if (updated == 0) {
                     throw new SQLException("Không thể cập nhật trạng thái cho document_copy_id = " + copyId);
                 }
-                System.out.println("✓ BƯỚC C: Cập nhật trạng thái 'borrowed' cho document_copy_id = " + copyId);
+                System.out.println("✓ Cập nhật trạng thái 'borrowed' cho document_copy_id = " + copyId);
             }
             psUpdate.close();
+
+            // COMMIT transaction
             connection.commit();
+            System.out.println("✓✓✓ COMMIT: Transaction thành công!");
 
             // Tạo đối tượng BorrowSlip để trả về
             borrowSlip = new BorrowSlip();
             borrowSlip.setId(slipId);
             borrowSlip.setReaderId(readerId);
-            borrowSlip.setStatus("borrowed");
+            borrowSlip.setStatus("borrowing");
 
         } catch (SQLException e) {
             try {
                 if (connection != null) {
                     connection.rollback();
-                    System.err.println("ROLLBACK: Giao dịch bị hủy do có lỗi!");
+                    System.err.println("✗✗✗ ROLLBACK: Giao dịch bị hủy do có lỗi!");
                 }
             } catch (SQLException rollbackEx) {
                 rollbackEx.printStackTrace();
