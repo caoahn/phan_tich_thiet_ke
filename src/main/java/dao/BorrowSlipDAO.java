@@ -80,7 +80,7 @@ public class BorrowSlipDAO extends DAO {
             try {
                 if (connection != null) {
                     connection.rollback();
-                    System.err.println("✗✗✗ ROLLBACK: Giao dịch bị hủy do có lỗi!");
+                    System.err.println("ROLLBACK: Giao dịch bị hủy do có lỗi!");
                 }
             } catch (SQLException rollbackEx) {
                 rollbackEx.printStackTrace();
