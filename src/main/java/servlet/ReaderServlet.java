@@ -45,6 +45,6 @@ public class ReaderServlet extends HttpServlet {
         }
 
         // Forward về lại trang tạo phiếu mượn
-        request.getRequestDispatcher("gdCreateBorrowSlip.jsp").forward(request, response);
+        request.getRequestDispatcher("librarian/gdCreateBorrowSlip.jsp").forward(request, response);
     }
 }

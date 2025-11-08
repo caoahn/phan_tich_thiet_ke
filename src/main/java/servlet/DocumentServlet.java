@@ -76,7 +76,7 @@ public class DocumentServlet extends HttpServlet {
         request.setAttribute("searchPerformed", true);
         
         // Forward đến trang JSP
-        request.getRequestDispatcher("gdSearchDocument.jsp").forward(request, response);
+        request.getRequestDispatcher("reader/gdSearchDocument.jsp").forward(request, response);
     }
     
     private void viewDetail(HttpServletRequest request, HttpServletResponse response)
@@ -97,7 +97,7 @@ public class DocumentServlet extends HttpServlet {
             request.setAttribute("document", document);
             request.setAttribute("copies", document.getCopies());
 
-            request.getRequestDispatcher("gdDetailDocument.jsp").forward(request, response);
+            request.getRequestDispatcher("reader/gdDetailDocument.jsp").forward(request, response);
 
         } catch (NumberFormatException e) {
             response.sendRedirect("document?action=list&error=invalid");
@@ -114,7 +114,7 @@ public class DocumentServlet extends HttpServlet {
         
         request.setAttribute("documentList", documentList);
         
-        request.getRequestDispatcher("gdSearchDocument.jsp").forward(request, response);
+        request.getRequestDispatcher("reader/gdSearchDocument.jsp").forward(request, response);
     }
     
     @Override

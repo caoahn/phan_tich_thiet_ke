@@ -33,7 +33,7 @@ public class BorrowSlipServlet extends HttpServlet {
                 if (session != null && session.getAttribute("currentReader") != null) {
                     session.removeAttribute("currentReader");
                 }
-                request.getRequestDispatcher("gdCreateBorrowSlip.jsp").forward(request, response);
+                request.getRequestDispatcher("librarian/gdCreateBorrowSlip.jsp").forward(request, response);
                 break;
             case "viewDetail":
                 viewBorrowSlipDetail(request, response);
@@ -100,7 +100,7 @@ public class BorrowSlipServlet extends HttpServlet {
                 request.setAttribute("message", "Tạo phiếu mượn thành công!");
 
                 // Forward về trang tạo phiếu mượn với thông báo
-                request.getRequestDispatcher("gdCreateBorrowSlip.jsp").forward(request, response);
+                request.getRequestDispatcher("librarian/gdCreateBorrowSlip.jsp").forward(request, response);
             } else {
                 response.sendRedirect("borrowSlip?action=create&error=Không thể tạo phiếu mượn");
             }
@@ -126,7 +126,7 @@ public class BorrowSlipServlet extends HttpServlet {
 
             if (borrowSlip != null) {
                 request.setAttribute("borrowSlip", borrowSlip);
-                request.getRequestDispatcher("gdBorrowSlipDetail.jsp").forward(request, response);
+                request.getRequestDispatcher("librarian/gdBorrowSlipDetail.jsp").forward(request, response);
             } else {
                 response.sendRedirect("borrowSlip?action=create&error=notfound");
             }

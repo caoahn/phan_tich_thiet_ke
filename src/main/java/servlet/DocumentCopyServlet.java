@@ -67,6 +67,6 @@ public class DocumentCopyServlet extends HttpServlet{
         }
 
         // gửi đi giao diện
-        request.getRequestDispatcher("gdCreateBorrowSlip.jsp").forward(request, response);
+        request.getRequestDispatcher("librarian/gdCreateBorrowSlip.jsp").forward(request, response);
     }
 }
