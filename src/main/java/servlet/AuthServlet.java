@@ -22,11 +22,9 @@ public class AuthServlet extends HttpServlet {
 
         switch (action){
             case "login":
-                // Handle login action
                 request.getRequestDispatcher("gdLogin.jsp").forward(request, response);
                 break;
             case "logout":
-                // Handle logout action
                 HttpSession session = request.getSession(false);
                 if (session != null) {
                     session.invalidate();
@@ -37,7 +35,6 @@ public class AuthServlet extends HttpServlet {
                 request.getRequestDispatcher("gdRegister.jsp").forward(request, response);
                 break;
             default:
-                // Handle default action
                 break;
         }
     }
@@ -59,14 +56,12 @@ public class AuthServlet extends HttpServlet {
                 register(request, response);
                 break;
             default:
-                // Handle default action
                 break;
         }
     }
 
     private void login(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException {
-        // Implement login logic here
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 

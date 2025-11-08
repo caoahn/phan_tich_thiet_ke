@@ -1,5 +1,4 @@
 package dao;
-import dao.DAO;
 import model.Member;
 import model.Reader;
 import model.Librarian;
@@ -10,8 +9,6 @@ import java.sql.SQLException;
 
 public class MemberDAO extends DAO {
     public Member login(String username, String password){
-//        String sql = "SELECT * FROM Members WHERE username = ? AND password = ?";
-
         String sql = "SELECT m.username, m.password, m.address, m.birthday, m.email, m.phone, m.role, l.id, l.librarianCode "
                 + "FROM member m "
                 + "LEFT JOIN librarian l ON m.username = l.username "
@@ -24,7 +21,6 @@ public class MemberDAO extends DAO {
             if (rs.next()) {
                 String role = rs.getString("role");
 
-                // Nếu role là librarian, trả về đối tượng Librarian với đầy đủ thông tin
                 if ("librarian".equals(role)) {
                     Librarian librarian = new Librarian();
                     librarian.setUsername(rs.getString("username"));
@@ -40,7 +36,6 @@ public class MemberDAO extends DAO {
                     System.out.println("Librarian logged in: " + librarian.getId());
                     return librarian;
                 } else {
-                    // Các role khác (reader, manager) trả về Member thông thường
                     Member m = new Member();
                     m.setUsername(rs.getString("username"));
                     m.setPassword(rs.getString("password"));
@@ -71,7 +66,6 @@ public class MemberDAO extends DAO {
         try {
             connection.setAutoCommit(false);
 
-            // INSERT VÀO MEMBER
             try (PreparedStatement psMember = connection.prepareStatement(sqlMember)) {
                 psMember.setString(1, reader.getUsername());
                 psMember.setString(2, reader.getPassword());
@@ -83,7 +77,6 @@ public class MemberDAO extends DAO {
                 psMember.executeUpdate();
             }
 
-            // INSERT VÀO READER
             try (PreparedStatement psReader = connection.prepareStatement(sqlReader)) {
                 psReader.setString(1, readerCode);
                 psReader.setString(2, reader.getUsername());
@@ -91,7 +84,6 @@ public class MemberDAO extends DAO {
                 psReader.executeUpdate();
             }
 
-            // COMMIT TRANSACTION
             connection.commit();
             return true;
 

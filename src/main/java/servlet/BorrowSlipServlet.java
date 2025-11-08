@@ -9,8 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,7 +61,6 @@ public class BorrowSlipServlet extends HttpServlet {
             throws ServletException, IOException {
 
         try {
-            // Lấy dữ liệu từ form parameters
             String readerIdStr = request.getParameter("readerId");
             String copyIdsJson = request.getParameter("copyIds");
             String borrowDateStr = request.getParameter("borrowDate");
@@ -71,9 +68,8 @@ public class BorrowSlipServlet extends HttpServlet {
 
             int readerId = Integer.parseInt(readerIdStr);
 
-            // Parse JSON array của copyIds - format: [1,2,3]
             List<Integer> copyIds = new ArrayList<>();
-            String arrayContent = copyIdsJson.replaceAll("[\\[\\]\\s]", ""); // Bỏ [ ] và khoảng trắng
+            String arrayContent = copyIdsJson.replaceAll("[\\[\\]\\s]", "");
             if (!arrayContent.isEmpty()) {
                 String[] items = arrayContent.split(",");
                 for (String item : items) {
@@ -81,16 +77,13 @@ public class BorrowSlipServlet extends HttpServlet {
                 }
             }
 
-            // Lấy librarianId từ session
             HttpSession session = request.getSession();
             Integer librarianId = (Integer) session.getAttribute("librarianId");
 
-            // Nếu chưa đăng nhập, dùng giá trị mặc định (tạm thời cho testing)
             if (librarianId == null) {
                 librarianId = 1;
             }
 
-            // Gọi DAO để tạo phiếu mượn với transaction (truyền thêm borrowDate và returnDate)
             BorrowSlip borrowSlip = borrowSlipDAO.createBorrowSlip(
                 readerId,
                 copyIds,
@@ -100,10 +93,8 @@ public class BorrowSlipServlet extends HttpServlet {
             );
 
             if (borrowSlip != null) {
-                // Xóa session reader
                 session.removeAttribute("currentReader");
 
-                // Set attributes để hiển thị thông báo thành công
                 request.setAttribute("createSuccess", true);
                 request.setAttribute("borrowSlip", borrowSlip);
                 request.setAttribute("message", "Tạo phiếu mượn thành công!");

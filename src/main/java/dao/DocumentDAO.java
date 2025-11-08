@@ -64,7 +64,6 @@ public class DocumentDAO extends DAO {
                 List<DocumentCopy> copies = new ArrayList<>();
 
                 while (rs.next()) {
-                    // Tạo document object ở lần đầu tiên
                     if (document == null) {
                         document = new Document();
                         document.setId(rs.getInt("id"));
@@ -73,7 +72,6 @@ public class DocumentDAO extends DAO {
                         document.setPublishedYear(rs.getString("publishedYear"));
                         document.setDescription(rs.getString("description"));
                     }
-                    // Thêm document copy nếu có (kiểm tra copy_id khác null)
                     if (rs.getObject("copy_id") != null) {
                         DocumentCopy copy = new DocumentCopy();
                         copy.setId(rs.getInt("copy_id"));
@@ -82,18 +80,16 @@ public class DocumentDAO extends DAO {
                         copies.add(copy);
                     }
                 }
-                // Gán danh sách copies vào document
                 if (document != null) {
                     document.setCopies(copies);
                 }
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Lỗi khi lấy chi tiết tài liệu!");
+            System.err.println("Lỗi khi lấy chi tiết tài liệu!");
             e.printStackTrace();
         }
 
-        System.out.println(document);
         return document;
     }
 

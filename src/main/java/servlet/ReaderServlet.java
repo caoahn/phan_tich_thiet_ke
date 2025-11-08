@@ -36,7 +36,6 @@ public class ReaderServlet extends HttpServlet {
         Reader reader = readerDAO.checkReaderExists(readerCode);
 
         if (reader != null) {
-            // Lưu reader vào session để giữ trạng thái
             HttpSession session = request.getSession();
             session.setAttribute("currentReader", reader);
             request.setAttribute("success", true);

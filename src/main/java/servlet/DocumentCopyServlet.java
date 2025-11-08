@@ -40,7 +40,6 @@ public class DocumentCopyServlet extends HttpServlet{
             boolean isAvailable = status.equalsIgnoreCase("available");
 
             if (isAvailable) {
-                // Thành công - trả về document copy
                 request.setAttribute("success", true);
                 request.setAttribute("documentCopy", doc);
             } else {

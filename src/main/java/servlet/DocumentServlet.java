@@ -16,9 +16,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * Servlet xử lý các request liên quan đến Document
- */
 @WebServlet(name = "DocumentServlet", urlPatterns = {"/document"})
 public class DocumentServlet extends HttpServlet {
     
@@ -27,7 +24,6 @@ public class DocumentServlet extends HttpServlet {
     
     @Override
     public void init() throws ServletException {
-        // Khởi tạo DAO khi servlet được tạo
         documentDAO = new DocumentDAO();
         documentCopyDAO = new DocumentCopyDAO();
     }
@@ -39,12 +35,10 @@ public class DocumentServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        // Set encoding để hỗ trợ tiếng Việt
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
         response.setContentType("text/html; charset=UTF-8");
         
-        // Lấy action từ request
         String action = request.getParameter("action");
         
         if (action == null) {
@@ -65,25 +59,18 @@ public class DocumentServlet extends HttpServlet {
         }
     }
     
-    /**
-     * Tìm kiếm tài liệu
-     */
     private void searchDocument(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        // Lấy từ khóa tìm kiếm
         String keyword = request.getParameter("keyword");
         
         if (keyword == null || keyword.trim().isEmpty()) {
-            // Nếu không có từ khóa, hiển thị tất cả
             listAllDocuments(request, response);
             return;
         }
         
-        // Gọi DAO để tìm kiếm
         List<Document> documentList = documentDAO.getListDocument(keyword);
         
-        // Đưa dữ liệu vào request
         request.setAttribute("documentList", documentList);
         request.setAttribute("keyword", keyword);
         request.setAttribute("searchPerformed", true);
@@ -92,13 +79,9 @@ public class DocumentServlet extends HttpServlet {
         request.getRequestDispatcher("gdSearchDocument.jsp").forward(request, response);
     }
     
-    /**
-     * Xem chi tiết tài liệu
-     */
     private void viewDetail(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        // Lấy ID tài liệu
         String idParam = request.getParameter("id");
         
         if (idParam == null || idParam.trim().isEmpty()) {
@@ -109,7 +92,6 @@ public class DocumentServlet extends HttpServlet {
         try {
             int documentId = Integer.parseInt(idParam);
 
-            // Lấy thông tin tài liệu (đã bao gồm danh sách bản sao)
             Document document = documentDAO.getDetailDocument(documentId);
 
             request.setAttribute("document", document);
@@ -125,25 +107,18 @@ public class DocumentServlet extends HttpServlet {
         }
     }
     
-    /**
-     * Hiển thị tất cả tài liệu
-     */
     private void listAllDocuments(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        // Lấy tất cả tài liệu
         List<Document> documentList = documentDAO.getAllDocuments();
         
-        // Đưa dữ liệu vào request
         request.setAttribute("documentList", documentList);
         
-        // Forward đến trang JSP
         request.getRequestDispatcher("gdSearchDocument.jsp").forward(request, response);
     }
     
     @Override
     public void destroy() {
-        // Đóng kết nối khi servlet bị hủy
         if (documentDAO != null) {
             documentDAO.closeConnection();
         }

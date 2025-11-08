@@ -21,7 +21,6 @@ public class BorrowSlipDAO extends DAO {
             connection.setAutoCommit(false);
             System.out.println("readerId: " + readerId);
 
-            // Tạo borrow_slip với ngày mượn và ngày trả từ input
             String sqlSlip = "INSERT INTO borrow_slip (borrowDate, returnDate, status, readerId) VALUES (?, ?, 'borrowing', ?)";
 
             PreparedStatement psSlip = connection.prepareStatement(sqlSlip, Statement.RETURN_GENERATED_KEYS);
@@ -35,7 +34,6 @@ public class BorrowSlipDAO extends DAO {
                 throw new SQLException("Tạo phiếu mượn thất bại, không có row nào được insert.");
             }
 
-            // Lấy ID của phiếu mượn vừa tạo
             ResultSet rs = psSlip.getGeneratedKeys();
             int slipId = 0;
             if (rs.next()) {
@@ -46,9 +44,7 @@ public class BorrowSlipDAO extends DAO {
             rs.close();
             psSlip.close();
 
-            System.out.println("✓ Tạo phiếu mượn thành công với ID: " + slipId);
 
-            // Tạo borrow_slip_detail cho từng document_copy
             String sqlDetail = "INSERT INTO borrow_slip_detail (borrowSlipId, documentCopyId, librarianId) VALUES (?, ?, ?)";
             PreparedStatement psDetail = connection.prepareStatement(sqlDetail);
 
@@ -57,11 +53,9 @@ public class BorrowSlipDAO extends DAO {
                 psDetail.setInt(2, copyId);
                 psDetail.setInt(3, librarianId);
                 psDetail.executeUpdate();
-                System.out.println("✓ Thêm chi tiết cho document_copy_id = " + copyId);
             }
             psDetail.close();
 
-            // Cập nhật trạng thái document_copy thành 'borrowed'
             String sqlUpdate = "UPDATE document_copy SET status = 'borrowed' WHERE id = ?";
             PreparedStatement psUpdate = connection.prepareStatement(sqlUpdate);
 
@@ -71,15 +65,12 @@ public class BorrowSlipDAO extends DAO {
                 if (updated == 0) {
                     throw new SQLException("Không thể cập nhật trạng thái cho document_copy_id = " + copyId);
                 }
-                System.out.println("✓ Cập nhật trạng thái 'borrowed' cho document_copy_id = " + copyId);
+                System.out.println("Cập nhật trạng thái 'borrowed' cho document_copy_id = " + copyId);
             }
             psUpdate.close();
 
-            // COMMIT transaction
             connection.commit();
-            System.out.println("✓✓✓ COMMIT: Transaction thành công!");
 
-            // Tạo đối tượng BorrowSlip để trả về
             borrowSlip = new BorrowSlip();
             borrowSlip.setId(slipId);
             borrowSlip.setReaderId(readerId);
@@ -98,7 +89,6 @@ public class BorrowSlipDAO extends DAO {
             borrowSlip = null;
 
         } finally {
-            // Khôi phục chế độ auto-commit
             try {
                 if (connection != null) {
                     connection.setAutoCommit(true);
@@ -137,14 +127,12 @@ public class BorrowSlipDAO extends DAO {
 
             while (rs.next()) {
                 if (borrowSlip == null) {
-                    // Chỉ khởi tạo BorrowSlip 1 lần duy nhất
                     borrowSlip = new BorrowSlip();
                     borrowSlip.setId(rs.getInt("slipId"));
                     borrowSlip.setBorrowDate(rs.getDate("borrowDate"));
                     borrowSlip.setReturnDate(rs.getDate("returnDate"));
                     borrowSlip.setStatus(rs.getString("status"));
 
-                    // Tạo Reader object
                     Reader reader = new Reader();
                     reader.setId(rs.getInt("readerId"));
                     reader.setReaderCode(rs.getString("readerCode"));
@@ -156,7 +144,6 @@ public class BorrowSlipDAO extends DAO {
 
                 int detailId = rs.getInt("detailId");
 
-                // kiem tra xem co chi tiet phieu muon khong
                 if (detailId != 0) {
                     BorrowSlipDetail detail = new BorrowSlipDetail();
                     detail.setId(detailId);
