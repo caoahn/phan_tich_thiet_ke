@@ -96,7 +96,7 @@ public class DocumentDAO extends DAO {
     public List<Document> getAllDocuments() {
         List<Document> documentList = new ArrayList<>();
         
-        String sql = "SELECT * FROM document ORDER BY created_at DESC";
+        String sql = "SELECT * FROM document";
         
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
