@@ -52,8 +52,9 @@ public class BorrowSlipDAO extends DAO {
                 psDetail.setInt(1, slipId);
                 psDetail.setInt(2, copyId);
                 psDetail.setInt(3, librarianId);
-                psDetail.executeUpdate();
+                psDetail.addBatch();
             }
+            psDetail.executeBatch();
             psDetail.close();
 
             String sqlUpdate = "UPDATE document_copy SET status = 'borrowed' WHERE id = ?";
@@ -61,14 +62,11 @@ public class BorrowSlipDAO extends DAO {
 
             for (Integer copyId : documentCopyIds) {
                 psUpdate.setInt(1, copyId);
-                int updated = psUpdate.executeUpdate();
-                if (updated == 0) {
-                    throw new SQLException("Không thể cập nhật trạng thái cho document_copy_id = " + copyId);
-                }
-                System.out.println("Cập nhật trạng thái 'borrowed' cho document_copy_id = " + copyId);
+                psUpdate.addBatch();
             }
-            psUpdate.close();
+            psUpdate.executeBatch();
 
+            psUpdate.close();
             connection.commit();
 
             borrowSlip = new BorrowSlip();
